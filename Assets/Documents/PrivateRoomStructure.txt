@@ -1,0 +1,46 @@
+----------private---------
+
+#private manager
+Private State
+init, idle1, throwing, idle2, chance_select ,exit
+
+#private UIManager
+각 state에 맞는 UI로 전환.
+
+init
+입장 애니메이션 출력 후 넘어가기
+
+idle1
+윷을 던지기 전 대기 상태
+던지기 버튼 띄우기
+
+throwing
+서버와 통신 후 알맞는 윷의 애니메이션 재생
+
+idle2
+윷을 이미 던진 상태에서 
+찬스카드와 나가기 버튼 띄우기
+
+exit
+나가는 애니메이션 출력 후 넘어가기
+
+[윷 결과 요청] -> /private/result
+-> 윷 결과 받음
+결과에 맞는 윷 던지기 애니메이션 출력
+
+[찬스카드 or 다음 선택]
+찬스카드 -> /private/chanceCard
+다음 -> /private/exit
+
+----------main---------
+
+- 턴플레이어
+만약 턴플레이어임을 알았다면
+
+
+if 선언턴이라면 선택 UI 제공
+[선언할 윷 결과 선택] -> /hall/declare
+
+[도전할 사람 받는 타이머]
+
+아무도 없다 -> /main/
