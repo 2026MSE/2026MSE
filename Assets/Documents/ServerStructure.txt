@@ -1,0 +1,64 @@
+플레이어들은 매초 /state/PlayerInfo와 /state/TurnInfo를 요청해서 현재 턴 진행이 어떻게 되어가는지 확인함.
+
+/state/PlayerInfo
+: Playerinfo 클래스로 된 정보 전달. 매초마다 전체 플레이어들의 정보를 가져와서 지금 이모티콘을 쓰고있는지, 살아는 있는지, 아이콘은 뭔지 띄워야하는데
+문제는 각 플레이어를 구분하는 방법을 모르겠음.
+제미나이랑 열심히 토론해야할듯
+/state/TurnInfo
+: Turninfo 클래스로 된 정보 전달. 모든 플레이어에게 같은걸 주므로 여러개 있을 필요 없음.
+
+class Turninfo{
+현재 턴 플레이어, 현재 턴플레이어가 있는 방
+}
+
+class PlayerInfo{
+플레이어 아이콘, 플레이어 이름, 플레이어가 가진 찬스 카드들, 현재 사용중인 이모티콘, 생존여부
+}
+
+
+----------private---------
+
+private의 모든 행동들은 우선 턴플레이어가 요청한건지 확인해야함. 요청 들어온게 턴플레이어껀지 아닌지 구분하는 방법을 찾아야 할듯.
+
+/private/result
+이번 턴에 윷을 던졌는지 안던졌는지 체크
+안 던졌다 -> 랜덤한 윷 결과 생성하고 저장 및 전달
+던졌다 -> 안줘
+
+/private/chanceCard?card=select_card
+enum으로 ChanceCard 생성.
+그리고 매개변수로 
+void UseChanceCard(ChanceCard card)
+이런 식으로 받음.
+아직은 구현 안할거니까 대충 enum으로 받기 좋게만 만들고 받은 뒤에 끝
+
+/private/exit
+Turninfo 수정해서 mainhall로 이동
+
+----------hall---------
+/hall/state
+[main hall은 총 4단계로 넘어가면서 진행]
+declare, idle1, challenge, idle2
+
+declare : 선언할 윷 고르는 중
+idle1 : 선언 후 대기중
+challenge : 모두에게 선언한 윷이 전달된 이후 챌린지 외치는 타이머 돌아가는 중. 만약 누가 챌린지 외치면 아예 hall씬에서 challenge 씬으로 이동
+idle2 : 챌린지 타이머 끝난 후 대기상태. 필요 없는데 혹시 몰라서 넣어두기
+
+/hall/declare?yut=select_yut
+enum으로 Yuts 생성.
+void DeclareYut(Yuts yut)
+이런 식으로 받아서 구현.
+턴플레이어가 요청한건지 아닌지 판단.
+
+/hall/challenge
+턴 플레이어가 아닌 사람이 요청 가능.
+state가 challenge일때만 처리함.
+여러명 들어오면 순서대로 저장하고 맨 처음 요청한 사람만 처리함.
+
+/hall/move?scene=yut_scene
+씬 이동하는 요청. 
+enum으로 Scenes도 만들어서 전체 씬들 구분하고
+void MoveScene(Scenes target_scene)
+이런식으로 받음
+Turninfo 에서 현재 플레이어가 있는 방 정보만 수정하면 됨.
