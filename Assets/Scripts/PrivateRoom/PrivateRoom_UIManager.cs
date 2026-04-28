@@ -31,6 +31,11 @@ public class PrivateRoom_UIManager : MonoBehaviour
         throwButton.onClick.AddListener(OnThrowButtonClicked);
         chanceSelectButton.onClick.AddListener(OnChanceSelectButtonClicked);
         exitButton.onClick.AddListener(OnExitButtonClicked);
+
+        // 초기 상태 설정
+        throwButton.gameObject.SetActive(false);
+        chanceSelectButton.gameObject.SetActive(false);
+        exitButton.gameObject.SetActive(false);
     }
 
     public void EnterIdle1()
@@ -47,21 +52,28 @@ public class PrivateRoom_UIManager : MonoBehaviour
         exitButton.gameObject.SetActive(true);
     }
 
+    public void EnterChanceSelect()
+    {
+        /*
+         * 찬스 선택 UI 활성화
+         */
+    }
+
     void OnThrowButtonClicked()
     {
         // 던지기 버튼 클릭 시 게임 매니저에 상태 변경 요청
-        PrivateRoom_GameManager.instance.SetState(PrivateRoomState.throwing);
+        PrivateRoom_GameManager.instance.SetState(PrivateRoomState.Throwing);
     }
 
     void OnChanceSelectButtonClicked()
     {
         // 찬스 선택 버튼 클릭 시 게임 매니저에 상태 변경 요청
-        PrivateRoom_GameManager.instance.SetState(PrivateRoomState.chance_select);
+        PrivateRoom_GameManager.instance.SetState(PrivateRoomState.Chance_select);
     }
 
     void OnExitButtonClicked()
     {
         // 나가기 버튼 클릭 시 게임 매니저에 상태 변경 요청
-        PrivateRoom_GameManager.instance.SetState(PrivateRoomState.exit);
+        PrivateRoom_GameManager.instance.SetState(PrivateRoomState.Exit);
     }
 }

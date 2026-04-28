@@ -18,6 +18,8 @@ public class LoadingSceneManager : MonoBehaviour
 
     IEnumerator LoadNextSceneRoutine()
     {
+        nextSceneName = MainGameManager.instance.GetGotoSceneName(); // 다음 씬 이름을 가져와서 nextSceneName에 저장 (MainGameManager에서 설정한 씬 이름)
+
         // 1. 비동기 로딩 시작
         AsyncOperation op = SceneManager.LoadSceneAsync(nextSceneName);
 

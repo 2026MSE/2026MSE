@@ -24,6 +24,6 @@ EditorBuildSettings:
     path: Assets/Scenes/RoomCreate.unity
     guid: 770ad2195a09c6241be35b2b3754815a
   - enabled: 1
-    path: Assets/Scenes/YutScene.unity
+    path: Assets/Scenes/YutRoom.unity
     guid: 51cd0966cfd3bc8439b8a4aae774a680
   m_configObjects: {}

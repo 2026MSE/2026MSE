@@ -133,7 +133,7 @@ PrefabInstance:
     - target: {fileID: 2785478439512794565, guid: 296f4e47ff4befb4e8e2b5536e30bf6d,
         type: 3}
       propertyPath: gotoSceneName
-      value: PrivateRoom
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 2785478439512794565, guid: 296f4e47ff4befb4e8e2b5536e30bf6d,
         type: 3}
@@ -285,7 +285,7 @@ PrefabInstance:
     - target: {fileID: 2785478439512794565, guid: 296f4e47ff4befb4e8e2b5536e30bf6d,
         type: 3}
       propertyPath: gotoSceneName
-      value: YutScene
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 2785478439512794565, guid: 296f4e47ff4befb4e8e2b5536e30bf6d,
         type: 3}
@@ -502,7 +502,7 @@ Camera:
   m_Enabled: 1
   serializedVersion: 2
   m_ClearFlags: 1
-  m_BackGroundColor: {r: 0.19215687, g: 0.3019608, b: 0.4745098, a: 0}
+  m_BackGroundColor: {r: 0, g: 0, b: 0, a: 1}
   m_projectionMatrixMode: 1
   m_GateFitMode: 2
   m_FOVAxisMode: 0
