@@ -14,7 +14,6 @@ public class MainGameUI : MonoBehaviour
 
     void Update()
     {
-        GetComponent<Canvas>().worldCamera = Camera.main;
         scene_text.text = "Now Scene : " + UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
     }
 }
