@@ -151,6 +151,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 414b48b93a5650342aa28d17d4fe42bf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  currentClientScene: 0
   gotoSceneName: MainGameUI
 --- !u!4 &159101422
 Transform:
@@ -825,7 +826,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b76c77ab45ce42a4a8e755c6d414682e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  isUsingServer: 0
+  isUsingServer: 1
+  serverUrl: http://localhost:8080
+  pollInterval: 1
 --- !u!4 &1479886516
 Transform:
   m_ObjectHideFlags: 0

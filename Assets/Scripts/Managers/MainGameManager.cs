@@ -8,7 +8,11 @@ using UnityEngine.SceneManagement;
 public class MainGameManager : MonoBehaviour
 {
     public static MainGameManager instance { get; private set; }
-    private TurnInfo turnInfo;
+    public TurnInfo turnInfo { get; set; } = new TurnInfo();
+    private Scene currentScene = Scene.NONE;
+
+    public ClientScene currentClientScene = ClientScene.NONE;
+    private ClientScene previousClientScene = ClientScene.NONE;
 
     public string gotoSceneName = "MainHall";
 
@@ -26,39 +30,54 @@ public class MainGameManager : MonoBehaviour
     }
     void Start()
     {
-        turnInfo = new TurnInfo();
         SceneManager.LoadScene("MainGameUI", LoadSceneMode.Additive);
     }
 
     void Update()
     {
-        // 턴이 바뀌었을 때만 실행함. 평소에는 None으로 유지
-        switch(turnInfo.currentRoom)
+        if(previousClientScene != currentClientScene)
         {
-            case Rooms.Title:
-                Title();
-                break;
-            case Rooms.Option:
-                Option();
-                break;
-            case Rooms.Exit:
-                Exit();
-                break;
-            case Rooms.MainHall:
-                MainHall();
-                break;
-            case Rooms.PrivateRoom:
-                PrivateRoom();
-                break;
-            case Rooms.YutRoom:
-                YutRoom();
-                break;
-            case Rooms.ChallengeRoom:
-                ChallengeRoom();
-                break;
-            default:
-                break;
+            previousClientScene = currentClientScene;
+            switch (currentClientScene)
+            {
+                case ClientScene.TITLE:
+                    Title();
+                    return;
+                case ClientScene.OPTION:
+                    Option();
+                    return;
+                case ClientScene.EXIT:
+                    Exit();
+                    return;
+                case ClientScene.IN_GAME:
+                    break;
+            }
         }
+
+        if (currentScene != turnInfo.currentTurnPlayerRoom)
+        {
+            currentScene = turnInfo.currentTurnPlayerRoom;
+
+            switch (currentScene)
+            {
+                case Scene.MAIN_HALL:
+                    MainHall();
+                    break;
+                case Scene.PRIVATE_ROOM:
+                    PrivateRoom();
+                    break;
+                case Scene.YUT_ROOM:
+                    YutRoom();
+                    break;
+                case Scene.CHALLENGE_ROOM:
+                    ChallengeRoom();
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        
     }
     public string GetGotoSceneName()
     {
@@ -67,14 +86,8 @@ public class MainGameManager : MonoBehaviour
         return tmp;
     }
 
-    public void SetTurnInfo(TurnInfo newTurnInfo)
-    {
-        turnInfo = newTurnInfo;
-    }
-
     public void LoadingScene()
     {
-        turnInfo.currentRoom = Rooms.None; // 씬 전환이 완료되면 None으로 초기화
         SceneManager.LoadScene("LoadingScene");
     }
 

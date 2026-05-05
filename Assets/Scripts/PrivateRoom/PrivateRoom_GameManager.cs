@@ -14,12 +14,7 @@ public enum PrivateRoomState
     Exit
 }
 
-public enum Yuts
-{
-    Head,
-    Tail,
-    Back
-}
+
 
 public class PrivateRoom_GameManager : MonoBehaviour
 {
@@ -35,7 +30,7 @@ public class PrivateRoom_GameManager : MonoBehaviour
             Destroy(gameObject);
         }
     }
-    public Yuts[] yutResult = new Yuts[4];
+    public StickSide[] yutResult = new StickSide[4];
 
     [SerializeField]
     PrivateRoomState state;
@@ -139,7 +134,7 @@ public class PrivateRoom_GameManager : MonoBehaviour
         if (ServerManager.instance.isUsingServer)
             ServerManager.instance.PrivateExitRequest().Forget();
         else
-            MainGameManager.instance.SetTurnInfo(new TurnInfo { currentRoom = Rooms.MainHall }); // 테스트용 더미 데이터
+            MainGameManager.instance.turnInfo = new TurnInfo { currentTurnPlayerRoom = Scene.MAIN_HALL }; // 테스트용 더미 데이터
         state = PrivateRoomState.None;
     }
     public async UniTaskVoid GetYutResult()
@@ -147,7 +142,7 @@ public class PrivateRoom_GameManager : MonoBehaviour
         if(ServerManager.instance.isUsingServer)
             await ServerManager.instance.YutRequest();
         else
-            yutResult = new Yuts[] { Yuts.Head, Yuts.Tail, Yuts.Head, Yuts.Tail }; // 테스트용 더미 데이터
+            yutResult = new StickSide[] { StickSide.HEAD, StickSide.TAIL, StickSide.HEAD, StickSide.TAIL }; // 테스트용 더미 데이터
 
         await YutAnimation();
     }

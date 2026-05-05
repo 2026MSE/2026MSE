@@ -9,7 +9,7 @@ using UnityEngine.XR;
 public class MainButtonUI : MonoBehaviour, IPointerClickHandler, IPointerEnterHandler, IPointerExitHandler
 {
     public Renderer targetRenderer;
-    public Rooms gotoSceneName = Rooms.MainHall;
+    public ClientScene gotoSceneName = ClientScene.TITLE;
     private Material targetMaterial;
     private int intensityID;
     public float targetIntensity = 0.1f;
@@ -28,7 +28,7 @@ public class MainButtonUI : MonoBehaviour, IPointerClickHandler, IPointerEnterHa
     }
     public void OnPointerClick(PointerEventData eventData)
     {
-        MainGameManager.instance.SetTurnInfo(new TurnInfo() { currentRoom = gotoSceneName});
+        MainGameManager.instance.currentClientScene = gotoSceneName;
     }
 
     public void OnPointerEnter(PointerEventData eventData)

@@ -9,21 +9,21 @@ EditorBuildSettings:
     path: Assets/Scenes/MainTitle.unity
     guid: 99c9720ab356a0642a771bea13969a05
   - enabled: 1
-    path: Assets/Scenes/LoadingScene.unity
+    path: Assets/Scenes/System/LoadingScene.unity
     guid: 8dfa1d59ad2075e47a077d9bc1fbb4f3
   - enabled: 1
-    path: Assets/Scenes/MainGameUI.unity
+    path: Assets/Scenes/System/MainGameUI.unity
     guid: 761f5a7b512c0234e9cce9baea5356af
   - enabled: 1
-    path: Assets/Scenes/MainHall.unity
+    path: Assets/Scenes/InGame/MainHall.unity
     guid: a09af425f2977ba4ea6abb908ed4388c
   - enabled: 1
-    path: Assets/Scenes/PrivateRoom.unity
+    path: Assets/Scenes/InGame/PrivateRoom.unity
     guid: 6a151d6deec301e4cab2d7f3c8ff9d23
   - enabled: 1
     path: Assets/Scenes/RoomCreate.unity
     guid: 770ad2195a09c6241be35b2b3754815a
   - enabled: 1
-    path: Assets/Scenes/YutRoom.unity
+    path: Assets/Scenes/InGame/YutRoom.unity
     guid: 51cd0966cfd3bc8439b8a4aae774a680
   m_configObjects: {}
