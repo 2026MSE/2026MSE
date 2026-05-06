@@ -49,6 +49,9 @@ public class MainGameManager : MonoBehaviour
                 case ClientScene.EXIT:
                     Exit();
                     return;
+                case ClientScene.ROOM_CREATE:
+                    RoomCreate();
+                    break;
                 case ClientScene.IN_GAME:
                     break;
             }
@@ -86,9 +89,12 @@ public class MainGameManager : MonoBehaviour
         return tmp;
     }
 
-    public void LoadingScene()
+    public void LoadingScene(bool is_additive = false)
     {
-        SceneManager.LoadScene("LoadingScene");
+        if(is_additive)
+            SceneManager.LoadScene("LoadingScene", LoadSceneMode.Additive);
+        else
+            SceneManager.LoadScene("LoadingScene");
     }
 
     void Title()
@@ -99,6 +105,11 @@ public class MainGameManager : MonoBehaviour
     {
         gotoSceneName = "Option";
         LoadingScene();
+    }
+    void RoomCreate()
+    {
+        gotoSceneName = "RoomCreate";
+        LoadingScene(true);
     }
     void MainHall()
     {

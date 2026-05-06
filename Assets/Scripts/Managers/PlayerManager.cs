@@ -21,7 +21,7 @@ public class PlayerManager : MonoBehaviour
         }
     }
 
-    public void createPlayer(string name, string style)
+    public void createPlayer(string name, string style = "adventurer")
     {
         ServerManager.instance.PlayerRequest(name, style).Forget();
     }
