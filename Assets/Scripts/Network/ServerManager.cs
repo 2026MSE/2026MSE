@@ -58,6 +58,7 @@ public class ServerManager : MonoBehaviour
 
     void RoomStop()
     {
+        Debug.Log("RoomStop called");
         if (room_polling_cts != null)
         {
             room_polling_cts.Cancel();
@@ -73,8 +74,8 @@ public class ServerManager : MonoBehaviour
             string playerInfo = await GetPollingRequest(serverUrl + "/state/playerInfo?=" + PlayerManager.instance.currentRoom.roomId, token);
             string turnInfo = await GetPollingRequest(serverUrl + "/state/turnInfo?=" + PlayerManager.instance.currentRoom.roomId, token);
 
-            PlayerManager.instance.playerList = JsonConvert.DeserializeObject<List<PlayerInfo>>(playerInfo);
-            MainGameManager.instance.turnInfo = JsonConvert.DeserializeObject<TurnInfo>(turnInfo);
+            PlayerManager.instance.playerList = JsonConvert.DeserializeObject<ApiResponse<List<PlayerInfo>>>(playerInfo).data;
+            MainGameManager.instance.turnInfo = JsonConvert.DeserializeObject<ApiResponse<TurnInfo>>(turnInfo).data;
 
             await UniTask.Delay((int)(pollInterval * 1000), cancellationToken: token);
         }
@@ -83,10 +84,12 @@ public class ServerManager : MonoBehaviour
     {
         while (!token.IsCancellationRequested)
         {
-            string roomInfo = await GetPollingRequest(serverUrl + "/room/state?=" + PlayerManager.instance.currentRoom.roomId, token);
+            string roomInfo = await GetPollingRequest(serverUrl + "/room/state?roomId=" + PlayerManager.instance.currentRoom.roomId, token);
+            string playersInfo = await GetPollingRequest(serverUrl + "/room/players?roomId=" + PlayerManager.instance.currentRoom.roomId, token);
 
-            // 플레이어 로비 만들기 전까지 보류
-            PlayerManager.instance.currentRoom = JsonConvert.DeserializeObject<RoomInfo>(roomInfo);
+            RoomInfo roomInfo1 = JsonConvert.DeserializeObject<RoomInfo>(roomInfo);
+
+            PlayerManager.instance.currentRoom = roomInfo1;
 
             await UniTask.Delay((int)(pollInterval * 1000), cancellationToken: token);
         }
@@ -96,7 +99,7 @@ public class ServerManager : MonoBehaviour
     {
         Create,
         Join,
-        Start
+        Start,
     }
 
     public async UniTaskVoid RoomRequest(GameActionRequest request, RoomActionType actionType)
@@ -113,7 +116,7 @@ public class ServerManager : MonoBehaviour
         string result = await SendJsonToServer(serverUrl + endpoint, json);
         if (result != null)
         {
-            PlayerManager.instance.currentRoom = JsonUtility.FromJson<RoomInfo>(result);
+            PlayerManager.instance.currentRoom = JsonUtility.FromJson<ApiResponse<RoomInfo>>(result).data;
             switch (actionType)
             {
                 case RoomActionType.Create:

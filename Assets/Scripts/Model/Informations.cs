@@ -70,13 +70,21 @@ public enum HallState
     IDLE2,
 
 }
+[System.Serializable]
+public class ApiResponse<T>
+{
+
+    public bool success;
+    public string message;
+    public T data;
+}
 
 [System.Serializable]
 public class RoomInfo
 {
 
     public string roomId;
-    public List<string> playerIds;
+    public List<string> playerIds = new List<string>();
     public bool started;
 
 }

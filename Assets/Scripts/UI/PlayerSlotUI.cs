@@ -7,7 +7,7 @@ public class PlayerSlotUI : MonoBehaviour
     public GameObject filledVisual;
     private TMP_Text playerNameText;
 
-    private void Start()
+    private void OnEnable()
     {
         playerNameText = filledVisual.GetComponentInChildren<TMP_Text>();
     }
@@ -18,10 +18,10 @@ public class PlayerSlotUI : MonoBehaviour
         filledVisual.SetActive(false);
     }
 
-    public void SetPlayer(PlayerInfo playerinfo)
+    public void SetPlayer(string name)
     {
         emptyVisual.SetActive(false);
         filledVisual.SetActive(true);
-        playerNameText.text = playerinfo.name;
+        playerNameText.text = name;
     }
 }

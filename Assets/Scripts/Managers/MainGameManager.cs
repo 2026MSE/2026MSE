@@ -110,8 +110,7 @@ public class MainGameManager : MonoBehaviour
     }
     void RoomCreate()
     {
-        gotoSceneName = "RoomCreate";
-        LoadingScene(true);
+        SceneManager.LoadScene("RoomCreate", LoadSceneMode.Additive);
     }
     void MainHall()
     {

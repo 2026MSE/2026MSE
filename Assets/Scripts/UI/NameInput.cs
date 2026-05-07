@@ -4,24 +4,25 @@ using UnityEngine.UI;
 
 public class NameInput : MonoBehaviour
 {
-    
-    void Start()
+    public Button button;
+    public TMP_InputField inputField;
+
+    private void OnEnable()
     {
-        GetComponentInParent<Button>().onClick.AddListener(OnClick);
+        button.onClick.AddListener(OnClick);
     }
 
     void Update()
     {
         if(PlayerManager.instance.this_player != null)
         {
-            
             gameObject.SetActive(false);
         }
     }
     
     public void OnClick()
     {
-        string name = GetComponentInParent<TMP_InputField>().text;
+        string name = inputField.text;
         PlayerManager.instance.createPlayer(name);
     }
 }

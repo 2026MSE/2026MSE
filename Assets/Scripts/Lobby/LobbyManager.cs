@@ -27,6 +27,10 @@ public class LobbyManager : MonoBehaviour
     
     private void Start()
     {
+    }
+
+    private void OnEnable()
+    {
         server_manager = ServerManager.instance;
         player_manager = PlayerManager.instance;
     }

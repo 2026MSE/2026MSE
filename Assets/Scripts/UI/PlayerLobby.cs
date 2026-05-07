@@ -12,16 +12,17 @@ public class PlayerLobby : MonoBehaviour
 
     private PlayerManager player_manager;
 
-    private void Start()
+    private void OnEnable()
     {
+        Debug.Log("PlayerLobby Start");
         player_manager = PlayerManager.instance;
-        UpdateRoomUI();
     }
 
     private void Update()
     {
-        if(player_manager.currentRoom != null)
+        if (player_manager.currentRoom != null)
         {
+            //Debug.Log("Current player count: " + player_manager.currentRoom.playerIds.Count);
             if (player_manager.currentRoom.playerIds.Count != playerCount)
             {
                 UpdateRoomUI();
@@ -32,11 +33,18 @@ public class PlayerLobby : MonoBehaviour
 
     private void UpdateRoomUI()
     {
+        Debug.Log("UpdateRoomUI");
+        //if(player_manager.playerList == null)
+        //{
+        //    Debug.LogWarning("No room info available to update UI.");
+        //    return;
+        //}
         for (int i = 0; i < playerSlots.Length; i++)
         {
-            if (i < player_manager.playerList.Count)
+            //Debug.Log(i + ": " + player_manager.playerList[i].name);
+            if (i < player_manager.currentRoom.playerIds.Count)
             {
-                playerSlots[i].SetPlayer(player_manager.playerList[i]);
+                playerSlots[i].SetPlayer(player_manager.currentRoom.playerIds[i]);
             }
             else
             {
