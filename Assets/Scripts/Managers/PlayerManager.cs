@@ -5,9 +5,10 @@ using UnityEngine;
 public class PlayerManager : MonoBehaviour
 {
     public static PlayerManager instance { get; private set; }
-    public List<PlayerInfo> playerList { get; set; }
     public Player this_player { get; set; }
-    
+    public GameRoom currentRoom { get; set; }
+    public List<PlayerInfo> playerList { get; set; }
+
     void Awake()
     {
         if (instance == null)
@@ -24,5 +25,10 @@ public class PlayerManager : MonoBehaviour
     public void createPlayer(string name, string style = "adventurer")
     {
         ServerManager.instance.PlayerRequest(name, style).Forget();
+    }
+
+    public void CameraUpdate()
+    {
+        
     }
 }

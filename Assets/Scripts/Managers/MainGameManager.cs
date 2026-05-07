@@ -31,6 +31,8 @@ public class MainGameManager : MonoBehaviour
     void Start()
     {
         SceneManager.LoadScene("MainGameUI", LoadSceneMode.Additive);
+        //µð¹ö±ë¿ë
+        ServerManager.instance.TextureRequest().Forget();
     }
 
     void Update()

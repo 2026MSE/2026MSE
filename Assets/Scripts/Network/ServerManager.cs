@@ -1,9 +1,10 @@
-using UnityEngine;
-using UnityEngine.Networking;
 using Cysharp.Threading.Tasks;
-using System.Threading;
 using Newtonsoft.Json;
 using System.Collections.Generic;
+using System.Threading;
+using UnityEditor.PackageManager.Requests;
+using UnityEngine;
+using UnityEngine.Networking;
 
 public class ServerManager : MonoBehaviour
 {
@@ -11,9 +12,10 @@ public class ServerManager : MonoBehaviour
 
     public bool isUsingServer = false;
     public string serverUrl = "http://localhost:8080";
-    public GameRoom gameRoom { get; private set; }
     public float pollInterval = 1.0f;
     private CancellationTokenSource polling_cts;
+
+    public GameObject test_plane;
 
     void Awake()
     {
@@ -26,6 +28,10 @@ public class ServerManager : MonoBehaviour
         {
             Destroy(gameObject);
         }
+    }
+    private void Start()
+    {
+
     }
     private void OnDestroy()
     {
@@ -58,6 +64,7 @@ public class ServerManager : MonoBehaviour
             string playerInfo = await GetPollingRequest(serverUrl + "/state/playerInfo", token);
             string turnInfo = await GetPollingRequest(serverUrl + "/state/turnInfo", token);
 
+            // 플레이어 로비 만들기 전까지 보류
             PlayerManager.instance.playerList = JsonConvert.DeserializeObject<List<PlayerInfo>>(playerInfo);
             MainGameManager.instance.turnInfo = JsonConvert.DeserializeObject<TurnInfo>(turnInfo);
 
@@ -70,22 +77,31 @@ public class ServerManager : MonoBehaviour
         string result = await FetchDataFromServer(serverUrl + "/api/room/create?roomName=" + roomName + "&maxPlayers=" + maxPlayers);
         if (result != null)
         {
-            gameRoom = JsonUtility.FromJson<GameRoom>(result);
-            GameStart();
+            PlayerManager.instance.currentRoom = JsonUtility.FromJson<GameRoom>(result);
+            
         }
     }
-
+    public async UniTaskVoid TextureRequest()
+    {
+        Texture2D result = await FetchTextureFromServer("https://api.dicebear.com/9.x/bottts/png");
+        if (result != null)
+        {
+            //test_plane.GetComponent<Renderer>().material.mainTexture = result;
+        }
+    }
     // 미완
     public async UniTask YutRequest()
     {
-        string result = await FetchDataFromServer(serverUrl + "/private/result?roomId=" + gameRoom.roomId + "&playerId=" + PlayerManager.instance.this_player.id);
+        string result = await FetchDataFromServer(
+            serverUrl + "/private/result?roomId=" + PlayerManager.instance.currentRoom.roomId + "&playerId=" + PlayerManager.instance.this_player.id);
 
         JsonUtility.FromJsonOverwrite(result, PrivateRoom_GameManager.instance.yutResult);
     }
 
     public async UniTaskVoid PlayerRequest(string name, string style)
     {
-        string result = await FetchDataFromServer(serverUrl + "/api/avatar/player?name=" + name + "&style=" + style);
+        string result = await FetchDataFromServer(
+            serverUrl + "/api/avatar/player?name=" + name + "&style=" + style);
         if (result != null)
         {
             Player player = JsonUtility.FromJson<Player>(result);
@@ -94,7 +110,9 @@ public class ServerManager : MonoBehaviour
     }
     public async UniTaskVoid PrivateExitRequest()
     {
-        string result = await FetchDataFromServer(serverUrl + "/private/exit?roomId=" + gameRoom.roomId + "&playerId=" + PlayerManager.instance.this_player.id);
+        string result = await FetchDataFromServer(
+            serverUrl + "/private/exit?roomId=" + PlayerManager.instance.currentRoom.roomId + "&playerId=" + PlayerManager.instance.this_player.id);
+
 
         return;
     }
@@ -119,12 +137,35 @@ public class ServerManager : MonoBehaviour
             return null;
         }
     }
+    private async UniTask<Texture2D> FetchTextureFromServer(string target_url)
+    {
+        using (var request = UnityWebRequestTexture.GetTexture(target_url))
+        {
+            try
+            {
+                request.SetRequestHeader("Accept", "image/*");
+                await request.SendWebRequest().ToUniTask();
+
+                if (request.result == UnityWebRequest.Result.Success)
+                {
+                    return DownloadHandlerTexture.GetContent(request);
+                }
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogError($"[Error] 이미지 요청 실패: {e.Message}");
+                return null;
+            }
+            return null;
+        }
+    }
 
     // 폴링 요청 실제 처리 함수.
     private async UniTask<string> GetPollingRequest(string uri, CancellationToken token)
     {
         using (UnityWebRequest webRequest = UnityWebRequest.Get(uri))
         {
+            webRequest.SetRequestHeader("Accept", "application/json");
             try
             {
                 await webRequest.SendWebRequest().WithCancellation(token);
