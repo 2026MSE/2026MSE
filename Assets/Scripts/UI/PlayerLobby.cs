@@ -7,26 +7,26 @@ public class PlayerLobby : MonoBehaviour
     [Header("UI References")]
     public PlayerSlotUI[] playerSlots;
 
-    private List<string> currentPlayers = new List<string>();
-    private int maxPlayers = 4;
+    public int maxPlayers = 4;
+    private int playerCount = 0;
+
+    private PlayerManager player_manager;
 
     private void Start()
     {
+        player_manager = PlayerManager.instance;
         UpdateRoomUI();
     }
 
-    public void AddPlayer(string newPlayerName)
+    private void Update()
     {
-        currentPlayers.Add(newPlayerName);
-        UpdateRoomUI();
-    }
-
-    public void RemovePlayer(string playerName)
-    {
-        if (currentPlayers.Contains(playerName))
+        if(player_manager.currentRoom != null)
         {
-            currentPlayers.Remove(playerName);
-            UpdateRoomUI();
+            if (player_manager.currentRoom.playerIds.Count != playerCount)
+            {
+                UpdateRoomUI();
+                playerCount = player_manager.currentRoom.playerIds.Count;
+            }
         }
     }
 
@@ -34,9 +34,9 @@ public class PlayerLobby : MonoBehaviour
     {
         for (int i = 0; i < playerSlots.Length; i++)
         {
-            if (i < currentPlayers.Count)
+            if (i < player_manager.playerList.Count)
             {
-                playerSlots[i].SetPlayer(currentPlayers[i]);
+                playerSlots[i].SetPlayer(player_manager.playerList[i]);
             }
             else
             {

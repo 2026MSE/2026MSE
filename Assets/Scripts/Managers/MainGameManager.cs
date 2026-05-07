@@ -32,7 +32,7 @@ public class MainGameManager : MonoBehaviour
     {
         SceneManager.LoadScene("MainGameUI", LoadSceneMode.Additive);
         //µð¹ö±ë¿ë
-        ServerManager.instance.TextureRequest().Forget();
+        //ServerManager.instance.TextureRequest().Forget();
     }
 
     void Update()

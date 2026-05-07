@@ -72,30 +72,19 @@ public enum HallState
 }
 
 [System.Serializable]
-public class GameRoom
+public class RoomInfo
 {
 
-    public String roomId;
-    public List<String> playerIds;
-    public bool started = false;
+    public string roomId;
+    public List<string> playerIds;
+    public bool started;
 
-    public TurnInfo turnInfo = new TurnInfo();
-
-    public HallState hallState = HallState.DECLARE;
-    public YutName declaredYut;
-
-    public YutResult currentYutResult;
-    public bool alreadyThrown = false;
-
-    public StickSide[] sticks = new StickSide[4];
-    public StickSide[] privateSticks = new StickSide[2];
-    public StickSide[] publicSticks = new StickSide[2];
-
-    public StickSide[] declaredPrivateSticks = new StickSide[2];
-
-    public String firstChallengerId;
-    public List<String> challengeQueue;
-
+}
+[System.Serializable]
+public class GameActionRequest
+{
+    public string roomId;
+    public string playerId;
 }
 public enum YutName
 {
@@ -109,9 +98,9 @@ public enum YutName
 public class YutResult
 {
 
-    private YutName result;
-    private int move;
-    private bool extraTurn;
+    YutName result;
+    int move;
+    bool extraTurn;
 
 }
 public enum StickSide

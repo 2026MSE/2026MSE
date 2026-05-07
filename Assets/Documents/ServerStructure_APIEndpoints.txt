@@ -1,0 +1,61 @@
+/room/create
+GameActionRequest(playerId) -> RoomInfo
+
+/room/join
+GameActionRequest(roomid, playerId) -> RoomInfo
+
+/room/state (로비에서 폴링)
+GameActionRequest(roomId) -> RoomInfo
+
+/room/start
+GameActionRequest(roomId) -> RoomInfo
+
+-------------------------
+
+폴링
+/state/playerInfo
+roomId -> List<PlayerInfo>
+
+/state/turnInfo
+roomId -> TurnInfo
+
+-----------------------------
+
+
+/private/result
+GameActionRequest -> YutResult
+
+/private/exit
+GameActionRequest -> null
+
+(필요 없는듯?)
+/private/info
+GameActionRequest -> PrivateInfoResponse
+
+---------------------------------
+
+/hall/state
+roomId -> HallState(enum)
+
+/hall/info
+roomId -> HallInfoResponse
+
+/hall/declare
+DeclareRequest(StickSide2개추가)
+-> DeclareResponse
+
+/hall/challenge
+GameActionRequest -> X
+
+/hall/judge
+GameActionRequest -> JudgeResponse
+1. JudgeResponse.judgeResult를 enum형식으로 JudgeResult만들어야 할듯. 승, 패를 확실하게 구분 지어야함.
+2. nextRoom도 수정해야함. 그냥 String으로 반환하는게 아니라 turnService가서 정식으로 룸을 윷씬으로 이동시켜야함.
+3. judge라는 함수 자체가 의미가 없는거 같음. 이거 결국 judge 한번 하면 그다음엔 아무도 호출 못하는데, 그러면 4명중 딱 한명만 호출해야하고, 그 플레이어만 챌린지 결과를 알게 되어버림.
+
+HallInfoResponse에 
+boolean isChallenged
+Player challenger
+StickSide[] actualPrivateSticks
+
+넣어두고 /hall/challenge를 누군가가 호출한 뒤에 타이머가 종료된 후에 HallService에서 알아서 judge등의 처리를 끝낸 뒤에 위 3개 데이터 업데이트만 하고 아무것도 return 안하는게 좋을듯.
