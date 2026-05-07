@@ -161,7 +161,6 @@ public class ServerManager : MonoBehaviour
         string result = await FetchDataFromServer(
             serverUrl + "/private/exit?roomId=" + PlayerManager.instance.currentRoom.roomId + "&playerId=" + PlayerManager.instance.this_player.id);
 
-
         return;
     }
 
