@@ -117,6 +117,7 @@ public class ServerManager : MonoBehaviour
         if (result != null)
         {
             PlayerManager.instance.currentRoom = JsonUtility.FromJson<ApiResponse<RoomInfo>>(result).data;
+            Debug.Log(PlayerManager.instance.currentRoom.roomId);
             switch (actionType)
             {
                 case RoomActionType.Create:

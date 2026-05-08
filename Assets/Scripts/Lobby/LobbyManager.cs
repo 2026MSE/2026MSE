@@ -19,6 +19,7 @@ public class LobbyManager : MonoBehaviour
     public GameObject playerMakingUI;
     public GameObject roomSelectUI;
     public GameObject inRoomUI;
+    public TMP_InputField roomIdInputField;
 
     bool isInLobby = true;
     ServerManager server_manager;
@@ -111,7 +112,7 @@ public class LobbyManager : MonoBehaviour
 
     public void RoomJoin()
     {
-        string roomId = roomSelectUI.GetComponent<TMP_InputField>().text;
+        string roomId = roomIdInputField.text;
 
         if (player_manager.this_player != null)
         {

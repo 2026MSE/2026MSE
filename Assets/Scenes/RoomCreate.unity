@@ -289,6 +289,7 @@ MonoBehaviour:
   playerMakingUI: {fileID: 1843739077}
   roomSelectUI: {fileID: 363364061}
   inRoomUI: {fileID: 402753841}
+  roomIdInputField: {fileID: 2028659180}
 --- !u!4 &98165872
 Transform:
   m_ObjectHideFlags: 0
