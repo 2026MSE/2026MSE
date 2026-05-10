@@ -135,7 +135,6 @@ public class LobbyManager : MonoBehaviour
                 roomId = player_manager.currentRoom.roomId
             };
             server_manager.RoomRequest(request, ServerManager.RoomActionType.Start).Forget();
-            server_manager.GameStart();
         }
     }
 }

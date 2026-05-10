@@ -71,11 +71,16 @@ public class ServerManager : MonoBehaviour
     {
         while (!token.IsCancellationRequested)
         {
-            string playerInfo = await GetPollingRequest(serverUrl + "/state/playerInfo?=" + PlayerManager.instance.currentRoom.roomId, token);
-            string turnInfo = await GetPollingRequest(serverUrl + "/state/turnInfo?=" + PlayerManager.instance.currentRoom.roomId, token);
+            Debug.Log("RoomID : " + PlayerManager.instance.currentRoom.roomId);
 
-            PlayerManager.instance.playerList = JsonConvert.DeserializeObject<ApiResponse<List<PlayerInfo>>>(playerInfo).data;
-            MainGameManager.instance.turnInfo = JsonConvert.DeserializeObject<ApiResponse<TurnInfo>>(turnInfo).data;
+            string playerInfo = await GetPollingRequest(serverUrl + "/state/playerInfo?roomId=" + PlayerManager.instance.currentRoom.roomId, token);
+            string turnInfo = await GetPollingRequest(serverUrl + "/state/turnInfo?roomId=" + PlayerManager.instance.currentRoom.roomId, token);
+
+            ApiResponse<List<PlayerInfo>> playerInfoResponse = JsonConvert.DeserializeObject<ApiResponse<List<PlayerInfo>>>(playerInfo);
+            ApiResponse<TurnInfo> turnInfoResponse = JsonConvert.DeserializeObject<ApiResponse<TurnInfo>>(turnInfo);
+
+            PlayerManager.instance.playerList = playerInfoResponse.data;
+            MainGameManager.instance.turnInfo = turnInfoResponse.data;
 
             await UniTask.Delay((int)(pollInterval * 1000), cancellationToken: token);
         }
@@ -87,9 +92,11 @@ public class ServerManager : MonoBehaviour
             string roomInfo = await GetPollingRequest(serverUrl + "/room/state?roomId=" + PlayerManager.instance.currentRoom.roomId, token);
             string playersInfo = await GetPollingRequest(serverUrl + "/room/players?roomId=" + PlayerManager.instance.currentRoom.roomId, token);
 
-            RoomInfo roomInfo1 = JsonConvert.DeserializeObject<RoomInfo>(roomInfo);
+            RoomInfo roomInfo1 = JsonConvert.DeserializeObject<ApiResponse<RoomInfo>>(roomInfo).data;
+            List<PlayerInfo> playerInfos = JsonConvert.DeserializeObject<ApiResponse<List<PlayerInfo>>>(playersInfo).data;
 
             PlayerManager.instance.currentRoom = roomInfo1;
+            PlayerManager.instance.playerList = playerInfos;
 
             await UniTask.Delay((int)(pollInterval * 1000), cancellationToken: token);
         }
@@ -117,7 +124,11 @@ public class ServerManager : MonoBehaviour
         if (result != null)
         {
             PlayerManager.instance.currentRoom = JsonUtility.FromJson<ApiResponse<RoomInfo>>(result).data;
-            Debug.Log(PlayerManager.instance.currentRoom.roomId);
+            Debug.Log("RoomRequest RoomID : " + PlayerManager.instance.currentRoom.roomId);
+            if(request.playerId != PlayerManager.instance.this_player.id)
+            {
+                return;
+            }
             switch (actionType)
             {
                 case RoomActionType.Create:
@@ -128,6 +139,7 @@ public class ServerManager : MonoBehaviour
                     break;
                 case RoomActionType.Start:
                     RoomStop();
+                    GameStart();
                     break;
             }
         }
@@ -156,8 +168,15 @@ public class ServerManager : MonoBehaviour
             serverUrl + "/api/avatar/player?name=" + name + "&style=" + style);
         if (result != null)
         {
-            Player player = JsonUtility.FromJson<Player>(result);
-            PlayerManager.instance.this_player = player;
+            Player player = JsonConvert.DeserializeObject<ApiResponse<Player>>(result).data;
+            Debug.Log($"[PlayerRequest] Player created: {player.name} (ID: {player.id}) (is_local : {PlayerManager.instance.this_player == null}");
+            if (PlayerManager.instance.this_player == null) {
+                PlayerManager.instance.this_player = player;
+            }
+            else
+            {
+                PlayerManager.instance.debug_players.Add(player);
+            }
         }
     }
     public async UniTaskVoid PrivateExitRequest()

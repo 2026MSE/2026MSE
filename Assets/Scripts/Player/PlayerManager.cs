@@ -9,6 +9,8 @@ public class PlayerManager : MonoBehaviour
     public RoomInfo currentRoom { get; set; } = null;
     public List<PlayerInfo> playerList { get; set; }
 
+    public List<Player> debug_players = new List<Player>();
+
     void Awake()
     {
         if (instance == null)

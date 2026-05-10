@@ -9,7 +9,7 @@ public class MainGameManager : MonoBehaviour
 {
     public static MainGameManager instance { get; private set; }
     public TurnInfo turnInfo { get; set; } = new TurnInfo();
-    private Scene currentScene = Scene.NONE;
+    private Scene? currentScene = Scene.NONE;
 
     public ClientScene currentClientScene = ClientScene.NONE;
     private ClientScene previousClientScene = ClientScene.NONE;
@@ -58,6 +58,9 @@ public class MainGameManager : MonoBehaviour
                     break;
             }
         }
+
+        if (currentClientScene != ClientScene.IN_GAME)
+            return;
 
         if (currentScene != turnInfo.currentTurnPlayerRoom)
         {

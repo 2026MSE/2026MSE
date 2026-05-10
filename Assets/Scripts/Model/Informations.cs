@@ -34,23 +34,22 @@ public enum ClientScene
 public class PlayerInfo
 {
 
-    public String playerId;
-    public String name;
+    public string playerId;
+    public string name;
 
-    public bool alive = true;
+    public string currentEmoticon = "";
+    public string profileUrl;
 
-    public String currentEmoticon = "";
-
-    public List<String> inventory;
+    public List<string> inventory;
 }
 [System.Serializable]
 public class TurnInfo
 {
 
-    public String currentTurnPlayerId;
-    public Scene currentTurnPlayerRoom;
+    public string currentTurnPlayerId;
+    public Scene? currentTurnPlayerRoom = Scene.MAIN_HALL;
 
-    public List<String> turnOrder;
+    public List<string> turnOrder;
     public int currentTurnIndex;
 
 }
@@ -85,6 +84,8 @@ public class RoomInfo
 
     public string roomId;
     public List<string> playerIds = new List<string>();
+    public string hostId;
+
     public bool started;
 
 }
