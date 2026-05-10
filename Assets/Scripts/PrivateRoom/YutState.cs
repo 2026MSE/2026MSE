@@ -4,8 +4,8 @@ using UnityEngine;
 
 public class YutState : MonoBehaviour
 {
-    private StickSide previousSide;
-    public StickSide stickSide;
+    private StickSide? previousSide;
+    public StickSide? stickSide;
     public GameObject tail_object;
     public GameObject head_object;
     public GameObject back_object;

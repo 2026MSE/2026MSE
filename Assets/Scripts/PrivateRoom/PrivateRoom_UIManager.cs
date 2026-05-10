@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using Cysharp.Threading.Tasks;
+using TMPro;
 
 public class PrivateRoom_UIManager : MonoBehaviour
 {
@@ -27,6 +28,7 @@ public class PrivateRoom_UIManager : MonoBehaviour
     public List<GameObject> yut_positions;
     public List<GameObject> yut_objects;
     public GameObject yut_prefab;
+    public TextMeshProUGUI yutResultText;
 
     void Start()
     {
@@ -39,6 +41,7 @@ public class PrivateRoom_UIManager : MonoBehaviour
         throwButton.gameObject.SetActive(false);
         chanceSelectButton.gameObject.SetActive(false);
         exitButton.gameObject.SetActive(false);
+        yutResultText.gameObject.SetActive(false);
     }
 
     public void EnterIdle1()
@@ -88,5 +91,7 @@ public class PrivateRoom_UIManager : MonoBehaviour
         {
             yut_objects[i].GetComponent<YutState>().stickSide = MainGameManager.instance.throwResponse.sticks[i];
         }
+        yutResultText.gameObject.SetActive(true);
+        yutResultText.text = MainGameManager.instance.throwResponse.yutResult.result.ToString();
     }
 }

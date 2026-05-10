@@ -29,9 +29,6 @@ GameActionRequest -> ThrowResponse
 
 ---------------------------------
 
-/hall/state
-roomId -> HallState(enum)
-
 /hall/info
 roomId -> HallInfoResponse
 
@@ -68,7 +65,7 @@ MoveRequest -> ApiResponse<Void>
 
 GET
 /board/state
-roomId -> ApiResponse<boardStatusResponse>
+roomId(string) -> ApiResponse<boardStatusResponse>
 
 POST
 /board/throw
@@ -80,5 +77,4 @@ GameActionRequest -> ApiResponse<Void>
 
 GET
 /board/moveList
-roomId, playerId -> ApiResponse<MoveListResponse>
-
+roomId(string), playerId(string) -> ApiResponse<MoveListResponse>

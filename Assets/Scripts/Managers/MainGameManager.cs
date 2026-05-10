@@ -9,12 +9,14 @@ public class MainGameManager : MonoBehaviour
 {
     public static MainGameManager instance { get; private set; }
     public TurnInfo turnInfo { get; set; } = new TurnInfo();
-    private Scene? currentScene = Scene.NONE;
-
+    public Scene? currentScene = Scene.NONE;
     public ClientScene currentClientScene = ClientScene.NONE;
     private ClientScene previousClientScene = ClientScene.NONE;
 
     public ThrowResponse throwResponse { get; set; } = new ThrowResponse();
+    public HallInfoResponse hallInfoResponse { get; set; } = new HallInfoResponse();
+    public BoardStatusResponse boardStatusResponse { get; set; } = new BoardStatusResponse();
+    public MoveListResponse moveListResponse { get; set; } = new MoveListResponse();
     private PlayerManager playerManager;
 
 
@@ -70,7 +72,7 @@ public class MainGameManager : MonoBehaviour
         if (currentScene != turnInfo.currentTurnPlayerRoom)
         {
             // 현재 턴 플레이어가 아니면서 private room에 있는 경우 씬 이동 X
-            if(turnInfo.currentTurnPlayerId != playerManager.this_player.id && turnInfo.currentTurnPlayerRoom == Scene.PRIVATE_ROOM)
+            if(!playerManager.isMyTurn() && turnInfo.currentTurnPlayerRoom == Scene.PRIVATE_ROOM)
             {
                 return;
             }

@@ -61,13 +61,13 @@ public class Player
     public string id;
 
 }
+[System.Serializable]
 public enum HallState
 {
     DECLARE,
     IDLE1,
     CHALLENGE,
     IDLE2,
-
 }
 [System.Serializable]
 public class ApiResponse<T>
@@ -83,7 +83,7 @@ public class RoomInfo
 {
 
     public string roomId;
-    public List<string> playerIds = new List<string>();
+    public List<string> playerIds;
     public string hostId;
 
     public bool started;
@@ -95,6 +95,7 @@ public class GameActionRequest
     public string roomId;
     public string playerId;
 }
+[System.Serializable]
 public enum YutName
 {
     BACK_DO,
@@ -104,6 +105,7 @@ public enum YutName
     YUT,
     MO
 }
+[System.Serializable]
 public class YutResult
 {
 
@@ -112,25 +114,21 @@ public class YutResult
     public bool extraTurn;
 
 }
-public enum StickSide
-{
-    HEAD,
-    TAIL,
-    BACK
-}
+
+[System.Serializable]
 public class ThrowResponse
 {
 
-    public StickSide[] sticks;
-    public StickSide[] privateSticks;
-    public StickSide[] publicSticks;
+    public StickSide?[] sticks;
+    public StickSide?[] privateSticks;
+    public StickSide?[] publicSticks;
 
     public YutResult yutResult;
 }
 
+[System.Serializable]
 public class BoardStatusResponse
 {
-
     public Dictionary<string, List<Piece>> allPieces;
 
     public bool extraTurn;
@@ -145,14 +143,15 @@ public class BoardStatusResponse
     public HallState hallState;
 }
 
+[System.Serializable]
 public class MoveRequest
 {
     public string roomId;
     public string playerId;
     public string pieceId;
-
 }
 
+[System.Serializable]
 public class MoveListResponse
 {
     public List<MoveOption> movablePieces;
@@ -166,6 +165,7 @@ public class Piece
 
     public List<Piece> carriedPieces;
 }
+[System.Serializable]
 public class MoveOption
 {
     public string pieceId;
@@ -173,31 +173,41 @@ public class MoveOption
     public int targetPosition;
     public bool finished;
 }
+[System.Serializable]
 public class HallInfoResponse
 {
     public HallState state;
 
-    public StickSide[] publicSticks;
-    public StickSide[] declaredPrivateSticks;
+    public StickSide?[] publicSticks;
+    public StickSide?[] declaredPrivateSticks;
 
     public string firstChallenger;
     public List<string> queue;
 }
+[System.Serializable]
+public enum StickSide
+{
+    HEAD,
+    TAIL,
+    BACK
+}
+[System.Serializable]
 public class DeclareRequest
 {
 
-    private string roomId;
-    private string playerId;
+    public string roomId;
+    public string playerId;
 
-    private StickSide s1;
-    private StickSide s2;
+    public StickSide s1;
+    public StickSide s2;
 }
+[System.Serializable]
 public class DeclareResponse
 {
-    private string message;
+    public string message;
 
-    private StickSide[] declaredPrivateSticks;
-    private StickSide[] publicSticks;
+    public StickSide?[] declaredPrivateSticks;
+    public StickSide?[] publicSticks;
 
-    private HallState state;
+    public HallState state;
 }

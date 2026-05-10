@@ -85,31 +85,42 @@ public class ServerManager : MonoBehaviour
             string turnInfo = await GetPollingRequest(serverUrl + "/state/turnInfo?roomId=" + playerManager.currentRoom.roomId, token);
 
             string tmp_info;
+            ApiResponse<HallInfoResponse> hallInfoResponse = null;
+            ApiResponse<BoardStatusResponse> boardStatusResponse = null;
             if (mainGameManager.turnInfo.currentTurnPlayerRoom == Scene.MAIN_HALL)
             {
                 tmp_info = await GetPollingRequest(serverUrl + "/hall/info?roomId=" + playerManager.currentRoom.roomId, token);
+                hallInfoResponse = JsonConvert.DeserializeObject<ApiResponse<HallInfoResponse>>(tmp_info);
             }
             else if (mainGameManager.turnInfo.currentTurnPlayerRoom == Scene.YUT_ROOM)
             {
-                tmp_info = await GetPollingRequest(serverUrl + "/board/info?roomId=" + playerManager.currentRoom.roomId, token);
+                tmp_info = await GetPollingRequest(serverUrl + "/board/state?roomId=" + playerManager.currentRoom.roomId, token);
+                boardStatusResponse = JsonConvert.DeserializeObject<ApiResponse<BoardStatusResponse>>(tmp_info);
             }
 
-                ApiResponse<List<PlayerInfo>> playerInfoResponse = JsonConvert.DeserializeObject<ApiResponse<List<PlayerInfo>>>(playerInfo);
+            ApiResponse<List<PlayerInfo>> playerInfoResponse = JsonConvert.DeserializeObject<ApiResponse<List<PlayerInfo>>>(playerInfo);
             ApiResponse<TurnInfo> turnInfoResponse = JsonConvert.DeserializeObject<ApiResponse<TurnInfo>>(turnInfo);
+            
 
             //Debug.Log($"[Poll] player : {playerInfoResponse.message}");
-            //Debug.Log($"[Poll] turn : {turnInfoResponse.message} + {turnInfoResponse.data.currentTurnPlayerRoom} + {turnInfoResponse.data.currentTurnPlayerId}");
-
+            if (mainGameManager.turnInfo.currentTurnPlayerRoom == Scene.MAIN_HALL)
+            {
+                mainGameManager.hallInfoResponse = hallInfoResponse.data;
+            }
+            else if (mainGameManager.turnInfo.currentTurnPlayerRoom == Scene.YUT_ROOM)
+            {
+                mainGameManager.boardStatusResponse = boardStatusResponse.data;
+            }
             playerManager.playerList = playerInfoResponse.data;
             mainGameManager.turnInfo = turnInfoResponse.data;
+            
 
             if (is_debugging)
             {
-                if (mainGameManager.turnInfo.currentTurnPlayerId != playerManager.this_player.id) 
+                if (!playerManager.isMyTurn()) 
                 { 
                     playerManager.this_player.id = mainGameManager.turnInfo.currentTurnPlayerId;
                 }
-                
             }
 
             await UniTask.Delay((int)(pollInterval * 1000), cancellationToken: token);
@@ -126,13 +137,13 @@ public class ServerManager : MonoBehaviour
             ApiResponse<List<PlayerInfo>> playerResponse = JsonConvert.DeserializeObject<ApiResponse<List<PlayerInfo>>>(playersInfo);
 
             //Debug.Log($"[PollRoom] room : {roomResponse.message}");
-            //Debug.Log($"[PollRoom] player : {playerResponse.message}");
+            Debug.Log($"[PollRoom] player : {playerResponse.message} {playerResponse.data.Count}");
 
             RoomInfo roomInfo1 = roomResponse.data;
             List<PlayerInfo> playerInfos = playerResponse.data;
 
-            playerManager.currentRoom = roomInfo1;
             playerManager.playerList = playerInfos;
+            playerManager.currentRoom = roomInfo1;
 
             await UniTask.Delay((int)(pollInterval * 1000), cancellationToken: token);
         }
@@ -191,8 +202,8 @@ public class ServerManager : MonoBehaviour
             //test_plane.GetComponent<Renderer>().material.mainTexture = result;
         }
     }
-    
-    public async UniTask YutRequest()
+
+    public async UniTaskVoid YutRequest()
     {
         await SendJsonToServer(serverUrl + "/board/throw", JsonUtility.ToJson(new GameActionRequest { playerId = playerManager.this_player.id, roomId = playerManager.currentRoom.roomId }));
         string result = await FetchDataFromServer(serverUrl + "/private/info?roomId=" + playerManager.currentRoom.roomId + "&playerId=" + playerManager.this_player.id);
@@ -201,6 +212,46 @@ public class ServerManager : MonoBehaviour
         Debug.Log($"YutRequest {response.message} : {response.data.sticks}");
 
         mainGameManager.throwResponse = response.data;
+    }
+    public async UniTask BoardStateRequest()
+    {
+        string result = await FetchDataFromServer(serverUrl + "/board/state?roomId=" + playerManager.currentRoom.roomId);
+
+        ApiResponse<BoardStatusResponse> response = JsonConvert.DeserializeObject<ApiResponse<BoardStatusResponse>>(result);
+        Debug.Log($"BoardStateRequest {response.message} : {response.data}");
+
+        mainGameManager.boardStatusResponse = response.data;
+    }
+
+    public async UniTask MovePieceRequest(string pieceId)
+    {
+        await SendJsonToServer(serverUrl + "/board/move", JsonUtility.ToJson(new MoveRequest { playerId = playerManager.this_player.id, roomId = playerManager.currentRoom.roomId, pieceId = pieceId }));
+    }
+
+    public async UniTask ThrowYutRequest()
+    {
+        await SendJsonToServer(serverUrl + "/board/throw", JsonUtility.ToJson(new GameActionRequest { playerId = playerManager.this_player.id, roomId = playerManager.currentRoom.roomId }));
+    }
+
+    public async UniTask EndTurnRequest()
+    {
+        await SendJsonToServer(serverUrl + "/board/end", JsonUtility.ToJson(new GameActionRequest { playerId = playerManager.this_player.id, roomId = playerManager.currentRoom.roomId }));
+    }
+
+    public async UniTask MoveListRequest()
+    {
+        string result = await FetchDataFromServer(serverUrl + "/board/moveList?roomId=" + playerManager.currentRoom.roomId + "&playerId=" + playerManager.this_player.id);
+        ApiResponse<MoveListResponse> response = JsonConvert.DeserializeObject<ApiResponse<MoveListResponse>>(result);
+        Debug.Log($"MoveListRequest {response.message} : {response.data}");
+        mainGameManager.moveListResponse = response.data;
+    }
+    public async UniTaskVoid DeclareRequest(StickSide[] declareSticks)
+    {
+        string result = await SendJsonToServer(serverUrl + "/hall/declare", JsonUtility.ToJson(new DeclareRequest { 
+            playerId = playerManager.this_player.id, roomId = playerManager.currentRoom.roomId, s1 = declareSticks[0], s2 = declareSticks[1] }));
+        
+        ApiResponse<DeclareResponse> response = JsonConvert.DeserializeObject<ApiResponse<DeclareResponse>>(result);
+        Debug.Log($"DeclareRequest {response.message} : {response.data}");
     }
 
     public async UniTaskVoid PlayerRequest(string name, string style)

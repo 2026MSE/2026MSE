@@ -5,15 +5,15 @@ using TMPro;
 
 public class MainGameUI : MonoBehaviour
 {
-    private TextMeshProUGUI scene_text;
+    //private TextMeshProUGUI scene_text;
     void Start()
     {
         DontDestroyOnLoad(gameObject);
-        scene_text = GetComponentInChildren<TextMeshProUGUI>();
+        //scene_text = GetComponentInChildren<TextMeshProUGUI>();
     }
 
     void Update()
     {
-        scene_text.text = "Now Scene : " + UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
+        //scene_text.text = "Now Scene : " + UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
     }
 }

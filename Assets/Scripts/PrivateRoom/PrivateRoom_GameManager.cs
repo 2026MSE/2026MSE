@@ -140,8 +140,8 @@ public class PrivateRoom_GameManager : MonoBehaviour
     }
     public async UniTaskVoid GetYutResult()
     {
-        if(ServerManager.instance.isUsingServer)
-            await ServerManager.instance.YutRequest();
+        if (ServerManager.instance.isUsingServer)
+            ServerManager.instance.YutRequest().Forget();
         else
             yutResult = new StickSide[] { StickSide.HEAD, StickSide.TAIL, StickSide.HEAD, StickSide.TAIL }; // 테스트용 더미 데이터
 

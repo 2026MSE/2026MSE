@@ -8,7 +8,10 @@ public class PlayerLobby : MonoBehaviour
     public PlayerSlotUI[] playerSlots;
 
     public int maxPlayers = 4;
-    private int playerCount = 0;
+
+    // 방 인원수와 리스트 인원수를 각각 따로 추적합니다.
+    private int lastRoomIdCount = 0;
+    private int lastPlayerListCount = 0;
 
     private PlayerManager player_manager;
 
@@ -22,11 +25,17 @@ public class PlayerLobby : MonoBehaviour
     {
         if (player_manager.currentRoom != null)
         {
-            //Debug.Log("Current player count: " + player_manager.currentRoom.playerIds.Count);
-            if (player_manager.currentRoom.playerIds.Count != playerCount)
+            int currentRoomCount = player_manager.currentRoom.playerIds.Count;
+            int currentListCount = player_manager.playerList != null ? player_manager.playerList.Count : 0;
+
+            // 방의 ID 개수가 바뀌었거나, 폴링을 통해 실제 플레이어 정보 리스트 개수가 바뀌었을 때 UI 갱신
+            if (currentRoomCount != lastRoomIdCount || currentListCount != lastPlayerListCount)
             {
                 UpdateRoomUI();
-                playerCount = player_manager.currentRoom.playerIds.Count;
+
+                // 마지막으로 UI를 갱신했던 시점의 개수를 저장
+                lastRoomIdCount = currentRoomCount;
+                lastPlayerListCount = currentListCount;
             }
         }
     }
@@ -34,23 +43,22 @@ public class PlayerLobby : MonoBehaviour
     private void UpdateRoomUI()
     {
         Debug.Log("UpdateRoomUI");
-        //if(player_manager.playerList == null)
-        //{
-        //    Debug.LogWarning("No room info available to update UI.");
-        //    return;
-        //}
+
         for (int i = 0; i < playerSlots.Length; i++)
         {
-            //Debug.Log(i + ": " + player_manager.playerList[i].name);
-            if (i < player_manager.currentRoom.playerIds.Count)
+            // [핵심 해결 부분] 
+            // i가 방 인원수보다 작고, '동시에' 아직 서버에서 받아온 playerList의 개수보다도 작을 때만 접근합니다.
+            if (i < player_manager.currentRoom.playerIds.Count &&
+                player_manager.playerList != null &&
+                i < player_manager.playerList.Count)
             {
-                playerSlots[i].SetPlayer(player_manager.currentRoom.playerIds[i]);
+                playerSlots[i].SetPlayer(player_manager.playerList[i].name);
             }
             else
             {
+                // 정보가 아직 덜 왔거나 빈 자리라면 일단 Empty 처리
                 playerSlots[i].SetEmpty();
             }
         }
     }
-
 }
