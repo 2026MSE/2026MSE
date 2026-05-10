@@ -13,10 +13,13 @@ public class ServerManager : MonoBehaviour
     public bool isUsingServer = false;
     public string serverUrl = "http://localhost:8080";
     public float pollInterval = 1.0f;
+    public bool is_debugging = false;
     private CancellationTokenSource polling_cts;
     private CancellationTokenSource room_polling_cts;
 
     public GameObject test_plane;
+    private PlayerManager playerManager;
+    private MainGameManager mainGameManager;
 
     void Awake()
     {
@@ -29,6 +32,11 @@ public class ServerManager : MonoBehaviour
         {
             Destroy(gameObject);
         }
+    }
+    private void Start()
+    {
+        playerManager = PlayerManager.instance;
+        mainGameManager = MainGameManager.instance;
     }
 
     public void GameStart()
@@ -71,16 +79,28 @@ public class ServerManager : MonoBehaviour
     {
         while (!token.IsCancellationRequested)
         {
-            Debug.Log("RoomID : " + PlayerManager.instance.currentRoom.roomId);
+            //Debug.Log("RoomID : " + playerManager.currentRoom.roomId);
 
-            string playerInfo = await GetPollingRequest(serverUrl + "/state/playerInfo?roomId=" + PlayerManager.instance.currentRoom.roomId, token);
-            string turnInfo = await GetPollingRequest(serverUrl + "/state/turnInfo?roomId=" + PlayerManager.instance.currentRoom.roomId, token);
+            string playerInfo = await GetPollingRequest(serverUrl + "/state/playerInfo?roomId=" + playerManager.currentRoom.roomId, token);
+            string turnInfo = await GetPollingRequest(serverUrl + "/state/turnInfo?roomId=" + playerManager.currentRoom.roomId, token);
 
             ApiResponse<List<PlayerInfo>> playerInfoResponse = JsonConvert.DeserializeObject<ApiResponse<List<PlayerInfo>>>(playerInfo);
             ApiResponse<TurnInfo> turnInfoResponse = JsonConvert.DeserializeObject<ApiResponse<TurnInfo>>(turnInfo);
 
-            PlayerManager.instance.playerList = playerInfoResponse.data;
-            MainGameManager.instance.turnInfo = turnInfoResponse.data;
+            //Debug.Log($"[Poll] player : {playerInfoResponse.message}");
+            //Debug.Log($"[Poll] turn : {turnInfoResponse.message} + {turnInfoResponse.data.currentTurnPlayerRoom} + {turnInfoResponse.data.currentTurnPlayerId}");
+
+            playerManager.playerList = playerInfoResponse.data;
+            mainGameManager.turnInfo = turnInfoResponse.data;
+
+            if (is_debugging)
+            {
+                if (mainGameManager.turnInfo.currentTurnPlayerId != playerManager.this_player.id) 
+                { 
+                    playerManager.this_player.id = mainGameManager.turnInfo.currentTurnPlayerId;
+                }
+                
+            }
 
             await UniTask.Delay((int)(pollInterval * 1000), cancellationToken: token);
         }
@@ -89,14 +109,20 @@ public class ServerManager : MonoBehaviour
     {
         while (!token.IsCancellationRequested)
         {
-            string roomInfo = await GetPollingRequest(serverUrl + "/room/state?roomId=" + PlayerManager.instance.currentRoom.roomId, token);
-            string playersInfo = await GetPollingRequest(serverUrl + "/room/players?roomId=" + PlayerManager.instance.currentRoom.roomId, token);
+            string roomInfo = await GetPollingRequest(serverUrl + "/room/state?roomId=" + playerManager.currentRoom.roomId, token);
+            string playersInfo = await GetPollingRequest(serverUrl + "/room/players?roomId=" + playerManager.currentRoom.roomId, token);
 
-            RoomInfo roomInfo1 = JsonConvert.DeserializeObject<ApiResponse<RoomInfo>>(roomInfo).data;
-            List<PlayerInfo> playerInfos = JsonConvert.DeserializeObject<ApiResponse<List<PlayerInfo>>>(playersInfo).data;
+            ApiResponse<RoomInfo> roomResponse = JsonConvert.DeserializeObject<ApiResponse<RoomInfo>>(roomInfo);
+            ApiResponse<List<PlayerInfo>> playerResponse = JsonConvert.DeserializeObject<ApiResponse<List<PlayerInfo>>>(playersInfo);
 
-            PlayerManager.instance.currentRoom = roomInfo1;
-            PlayerManager.instance.playerList = playerInfos;
+            //Debug.Log($"[PollRoom] room : {roomResponse.message}");
+            //Debug.Log($"[PollRoom] player : {playerResponse.message}");
+
+            RoomInfo roomInfo1 = roomResponse.data;
+            List<PlayerInfo> playerInfos = playerResponse.data;
+
+            playerManager.currentRoom = roomInfo1;
+            playerManager.playerList = playerInfos;
 
             await UniTask.Delay((int)(pollInterval * 1000), cancellationToken: token);
         }
@@ -123,9 +149,11 @@ public class ServerManager : MonoBehaviour
         string result = await SendJsonToServer(serverUrl + endpoint, json);
         if (result != null)
         {
-            PlayerManager.instance.currentRoom = JsonUtility.FromJson<ApiResponse<RoomInfo>>(result).data;
-            Debug.Log("RoomRequest RoomID : " + PlayerManager.instance.currentRoom.roomId);
-            if(request.playerId != PlayerManager.instance.this_player.id)
+            ApiResponse<RoomInfo> response = JsonConvert.DeserializeObject<ApiResponse<RoomInfo>>(result);
+            Debug.Log($"[RoomRequest] {response.message} RoomRequest RoomID : {response.data.roomId}");
+
+            playerManager.currentRoom = response.data;
+            if (request.playerId != playerManager.this_player.id)
             {
                 return;
             }
@@ -156,10 +184,14 @@ public class ServerManager : MonoBehaviour
     // 미완
     public async UniTask YutRequest()
     {
-        string result = await FetchDataFromServer(
-            serverUrl + "/private/result?roomId=" + PlayerManager.instance.currentRoom.roomId + "&playerId=" + PlayerManager.instance.this_player.id);
+        await SendJsonToServer(serverUrl + "/board/throw", JsonUtility.ToJson(new GameActionRequest { playerId = playerManager.this_player.id, roomId = playerManager.currentRoom.roomId }));
+        string result = await FetchDataFromServer(serverUrl + "/private/info?roomId=" + playerManager.currentRoom.roomId + "&playerId=" + playerManager.this_player.id);
 
-        JsonUtility.FromJsonOverwrite(result, PrivateRoom_GameManager.instance.yutResult);
+        ApiResponse<ThrowResponse> response = JsonConvert.DeserializeObject<ApiResponse<ThrowResponse>>(result);
+        Debug.Log($"YutRequest {response.message} : {response.data.sticks}");
+
+        mainGameManager.throwResponse = response.data;
+
     }
 
     public async UniTaskVoid PlayerRequest(string name, string style)
@@ -168,21 +200,22 @@ public class ServerManager : MonoBehaviour
             serverUrl + "/api/avatar/player?name=" + name + "&style=" + style);
         if (result != null)
         {
-            Player player = JsonConvert.DeserializeObject<ApiResponse<Player>>(result).data;
-            Debug.Log($"[PlayerRequest] Player created: {player.name} (ID: {player.id}) (is_local : {PlayerManager.instance.this_player == null}");
-            if (PlayerManager.instance.this_player == null) {
-                PlayerManager.instance.this_player = player;
+            ApiResponse<Player> response = JsonConvert.DeserializeObject<ApiResponse<Player>>(result);
+            Player player = response.data;
+            Debug.Log($"[PlayerRequest] {response.message}: {player.name} (ID: {player.id}) (is_local : {playerManager.this_player == null})");
+            if (playerManager.this_player == null) {
+                playerManager.this_player = player;
             }
             else
             {
-                PlayerManager.instance.debug_players.Add(player);
+                playerManager.debug_players.Add(player);
             }
         }
     }
     public async UniTaskVoid PrivateExitRequest()
     {
-        string result = await FetchDataFromServer(
-            serverUrl + "/private/exit?roomId=" + PlayerManager.instance.currentRoom.roomId + "&playerId=" + PlayerManager.instance.this_player.id);
+        await SendJsonToServer(
+            serverUrl + "/private/exit", JsonUtility.ToJson(new GameActionRequest { playerId = playerManager.this_player.id, roomId = playerManager.currentRoom.roomId }));
 
         return;
     }
@@ -223,7 +256,6 @@ public class ServerManager : MonoBehaviour
 
                 if (request.result == UnityWebRequest.Result.Success)
                 {
-                    Debug.Log("전송 성공!");
                     return request.downloadHandler.text;
                 }
                 else

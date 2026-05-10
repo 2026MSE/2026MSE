@@ -131,6 +131,7 @@ public class PrivateRoom_GameManager : MonoBehaviour
          * 룸 나가기 애니메이션 실행시키고
          * 씬 전환
          */
+
         if (ServerManager.instance.isUsingServer)
             ServerManager.instance.PrivateExitRequest().Forget();
         else
@@ -165,6 +166,8 @@ public class PrivateRoom_GameManager : MonoBehaviour
          * yutResult에 따라 애니메이션 실행
          * 애니메이션이 끝나면 state 변경
          */
+
+        await UniTask.WaitUntil(() => MainGameManager.instance.throwResponse != null);
         state = PrivateRoomState.Idle2;
     }
 }

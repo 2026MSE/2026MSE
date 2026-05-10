@@ -107,9 +107,9 @@ public enum YutName
 public class YutResult
 {
 
-    YutName result;
-    int move;
-    bool extraTurn;
+    public YutName result;
+    public int move;
+    public bool extraTurn;
 
 }
 public enum StickSide
@@ -117,4 +117,13 @@ public enum StickSide
     HEAD,
     TAIL,
     BACK
+}
+public class ThrowResponse
+{
+
+    public StickSide[] sticks;
+    public StickSide[] privateSticks;
+    public StickSide[] publicSticks;
+
+    public YutResult yutResult;
 }

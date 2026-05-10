@@ -16,7 +16,7 @@ public class PlayerInstantiate : MonoBehaviour
         playerManager = PlayerManager.instance;
         for(int i = 0; i < playerManager.playerList.Count; i++) 
         {
-            playerObjects[i] = Instantiate(playerPrefab, playerSpawnPoints[i].transform);
+            playerObjects.Add(Instantiate(playerPrefab, playerSpawnPoints[i].transform));
             if (playerManager.playerList[i].playerId == playerManager.this_player.id)
             {
                 playerObjects[i].GetComponent<PlayerController>().is_local_player = true;

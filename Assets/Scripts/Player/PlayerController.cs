@@ -9,16 +9,17 @@ public class PlayerController : MonoBehaviour
 
     private void Update()
     {
-        if (is_local_player)
-        {
-            CameraEnable();
-        }
+        CameraEnable();
     }
     public void CameraEnable()
     {
         if (is_local_player)
         {
-            player_camera.enabled = true;
+            player_camera.tag = "MainCamera";
+        }
+        else
+        {
+            player_camera.gameObject.SetActive(false);
         }
     }
 }

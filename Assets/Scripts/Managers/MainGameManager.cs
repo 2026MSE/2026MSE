@@ -14,6 +14,10 @@ public class MainGameManager : MonoBehaviour
     public ClientScene currentClientScene = ClientScene.NONE;
     private ClientScene previousClientScene = ClientScene.NONE;
 
+    public ThrowResponse throwResponse { get; set; } = new ThrowResponse();
+    private PlayerManager playerManager;
+
+
     public string gotoSceneName = "MainHall";
 
     private void Awake()
@@ -30,6 +34,7 @@ public class MainGameManager : MonoBehaviour
     }
     void Start()
     {
+        playerManager = PlayerManager.instance;
         SceneManager.LoadScene("MainGameUI", LoadSceneMode.Additive);
         //디버깅용
         //ServerManager.instance.TextureRequest().Forget();
@@ -64,8 +69,13 @@ public class MainGameManager : MonoBehaviour
 
         if (currentScene != turnInfo.currentTurnPlayerRoom)
         {
-            currentScene = turnInfo.currentTurnPlayerRoom;
+            // 현재 턴 플레이어가 아니면서 private room에 있는 경우 씬 이동 X
+            if(turnInfo.currentTurnPlayerId != playerManager.this_player.id && turnInfo.currentTurnPlayerRoom == Scene.PRIVATE_ROOM)
+            {
+                return;
+            }
 
+            currentScene = turnInfo.currentTurnPlayerRoom;
             switch (currentScene)
             {
                 case Scene.MAIN_HALL:
@@ -117,6 +127,7 @@ public class MainGameManager : MonoBehaviour
     }
     void MainHall()
     {
+        throwResponse = null;
         gotoSceneName = "MainHall";
         LoadingScene();
     }
