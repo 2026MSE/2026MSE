@@ -830,6 +830,7 @@ MonoBehaviour:
   isUsingServer: 1
   serverUrl: http://localhost:8080
   pollInterval: 1
+  is_debugging: 1
   test_plane: {fileID: 1847326998}
 --- !u!4 &1479886516
 Transform:
@@ -858,6 +859,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8d833434ccb8b664f9d7c45fc1f02861, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  debug_players: []
 --- !u!23 &1521654705 stripped
 MeshRenderer:
   m_CorrespondingSourceObject: {fileID: 6772347492702531335, guid: e0e3bea4d31b43b42bee63975df5dd7e,

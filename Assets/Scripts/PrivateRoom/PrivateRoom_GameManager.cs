@@ -162,12 +162,9 @@ public class PrivateRoom_GameManager : MonoBehaviour
     public async UniTask YutAnimation()
     {
         await UniTask.Delay(2000); // 테스트용 딜레이
-        /*
-         * yutResult에 따라 애니메이션 실행
-         * 애니메이션이 끝나면 state 변경
-         */
 
         await UniTask.WaitUntil(() => MainGameManager.instance.throwResponse != null);
+        PrivateRoom_UIManager.instance.ShowYut();
         state = PrivateRoomState.Idle2;
     }
 }

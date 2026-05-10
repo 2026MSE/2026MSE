@@ -127,3 +127,77 @@ public class ThrowResponse
 
     public YutResult yutResult;
 }
+
+public class BoardStatusResponse
+{
+
+    public Dictionary<string, List<Piece>> allPieces;
+
+    public bool extraTurn;
+    public ThrowResponse throwResult;
+
+    public string currentTurnPlayerId;
+    public Scene currentRoom;
+
+    public bool alreadyThrown;
+    public bool alreadyMoved;
+
+    public HallState hallState;
+}
+
+public class MoveRequest
+{
+    public string roomId;
+    public string playerId;
+    public string pieceId;
+
+}
+
+public class MoveListResponse
+{
+    public List<MoveOption> movablePieces;
+}
+[System.Serializable]
+public class Piece
+{
+    public string id;
+    public string ownerId;
+    public int currentPosition;
+
+    public List<Piece> carriedPieces;
+}
+public class MoveOption
+{
+    public string pieceId;
+    public int currentPosition;
+    public int targetPosition;
+    public bool finished;
+}
+public class HallInfoResponse
+{
+    public HallState state;
+
+    public StickSide[] publicSticks;
+    public StickSide[] declaredPrivateSticks;
+
+    public string firstChallenger;
+    public List<string> queue;
+}
+public class DeclareRequest
+{
+
+    private string roomId;
+    private string playerId;
+
+    private StickSide s1;
+    private StickSide s2;
+}
+public class DeclareResponse
+{
+    private string message;
+
+    private StickSide[] declaredPrivateSticks;
+    private StickSide[] publicSticks;
+
+    private HallState state;
+}

@@ -4,10 +4,7 @@ using UnityEngine;
 
 public class MainHallManager : MonoBehaviour
 {
-    void Start()
-    {
-        
-    }
+    
 
     void Update()
     {

@@ -21,16 +21,11 @@ roomId -> TurnInfo
 
 -----------------------------
 
-
-/private/result
-GameActionRequest -> YutResult
-
 /private/exit
 GameActionRequest -> null
 
-(필요 없는듯?)
 /private/info
-GameActionRequest -> PrivateInfoResponse
+GameActionRequest -> ThrowResponse
 
 ---------------------------------
 
@@ -43,6 +38,8 @@ roomId -> HallInfoResponse
 /hall/declare
 DeclareRequest(StickSide2개추가)
 -> DeclareResponse
+
+-------milestone2에서는 사용 X-----------
 
 /hall/challenge
 GameActionRequest -> X
@@ -59,3 +56,29 @@ Player challenger
 StickSide[] actualPrivateSticks
 
 넣어두고 /hall/challenge를 누군가가 호출한 뒤에 타이머가 종료된 후에 HallService에서 알아서 judge등의 처리를 끝낸 뒤에 위 3개 데이터 업데이트만 하고 아무것도 return 안하는게 좋을듯.
+
+
+
+
+--------------------------------
+
+POST
+/board/move
+MoveRequest -> ApiResponse<Void>
+
+GET
+/board/state
+roomId -> ApiResponse<boardStatusResponse>
+
+POST
+/board/throw
+GameActionRequest -> ApiResponse<Void>
+
+POST
+/board/end
+GameActionRequest -> ApiResponse<Void>
+
+GET
+/board/moveList
+roomId, playerId -> ApiResponse<MoveListResponse>
+
