@@ -108,7 +108,9 @@ public class MainGameManager : MonoBehaviour
 
     public void LoadingScene(bool is_additive = false)
     {
-        if(is_additive)
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
+        if (is_additive)
             SceneManager.LoadScene("LoadingScene", LoadSceneMode.Additive);
         else
             SceneManager.LoadScene("LoadingScene");
