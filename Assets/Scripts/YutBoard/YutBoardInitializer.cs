@@ -26,7 +26,7 @@ public class YutBoardInitializer : MonoBehaviour
         SpawnPieces(state.allPieces);
 
         // 3. 생성이 끝났으면 YutManager에게 "이제 턴 확인하고 게임을 시작해!" 라고 알립니다.
-        YutManager.Instance.UpdateBoardUI();
+        YutManager.Instance.StartGameAfterInit(state);
     }
 
     private void SpawnPieces(Dictionary<string, List<Piece>> allPieces)
