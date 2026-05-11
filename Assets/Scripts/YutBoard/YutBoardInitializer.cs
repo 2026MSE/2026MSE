@@ -14,8 +14,6 @@ public class YutBoardInitializer : MonoBehaviour
     {
         Debug.Log("윷놀이 씬 초기화 시작...");
 
-        // 1. 씬 로드 직후 서버에서 최신 보드 상태를 가져옵니다.
-        await ServerManager.instance.BoardStateRequest();
         var state = MainGameManager.instance.boardStatusResponse;
 
         if (state == null || state.allPieces == null)
