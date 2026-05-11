@@ -213,7 +213,15 @@ public class ServerManager : MonoBehaviour
 
         mainGameManager.throwResponse = response.data;
     }
-    
+    public async UniTask BoardStateRequest()
+    {
+        string result = await FetchDataFromServer(serverUrl + "/board/state?roomId=" + playerManager.currentRoom.roomId);
+
+        ApiResponse<BoardStatusResponse> response = JsonConvert.DeserializeObject<ApiResponse<BoardStatusResponse>>(result);
+        Debug.Log($"BoardStateRequest {response.message} : {response.data}");
+
+        mainGameManager.boardStatusResponse = response.data;
+    }
     public async UniTask MovePieceRequest(string pieceId)
     {
         await SendJsonToServer(serverUrl + "/board/move", JsonUtility.ToJson(new MoveRequest { playerId = playerManager.this_player.id, roomId = playerManager.currentRoom.roomId, pieceId = pieceId }));

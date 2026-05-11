@@ -13,7 +13,7 @@ public class YutBoardInitializer : MonoBehaviour
     private async void Start()
     {
         Debug.Log("¿∑≥Ó¿Ã æ¿ √ ±‚»≠ Ω√¿€...");
-
+        await ServerManager.instance.BoardStateRequest();
         var state = MainGameManager.instance.boardStatusResponse;
 
         if (state == null || state.allPieces == null)
