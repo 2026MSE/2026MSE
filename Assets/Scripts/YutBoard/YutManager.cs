@@ -54,7 +54,7 @@ public class YutManager : MonoBehaviour
         if (syncTimer >= 1f)
         {
             syncTimer = 0f;
-            UpdateBoardUI(MainGameManager.instance.boardStatusResponse);
+            UpdateBoardUI();
         }
 
         // 자동 턴 전환 감지
@@ -80,21 +80,15 @@ public class YutManager : MonoBehaviour
             allPiecesDict.Add(piece.pieceId, piece);
         }
     }
-
-    public void StartGameAfterInit(BoardStatusResponse initialState)
-    {
-        UpdateBoardUI(initialState);
-    }
-
     // =========================================================
-    // [최초 턴 시작] HallInfoResponse 기반
+    // [최초 턴 시작] 
     // =========================================================
     private void OnMyTurnStarted()
     {
         Debug.Log("내 턴 시작! (Hall에서 정해진 윷 결과 확인)");
 
-        var hallInfo = MainGameManager.instance.hallInfoResponse;
-        string resultStr = CalculateYutResult(hallInfo.publicSticks, hallInfo.declaredPrivateSticks);
+        var throw_result = MainGameManager.instance.boardStatusResponse.throwResult;
+        string resultStr = TranslateYutResult(throw_result.yutResult.result);
 
         if (throwResultText != null)
             throwResultText.text = $"현재 결과: {resultStr}";
@@ -134,8 +128,7 @@ public class YutManager : MonoBehaviour
         // ServerManager의 폴링 대기
         await Task.Delay(1000);
 
-        var state = MainGameManager.instance.boardStatusResponse;
-        UpdateBoardUI(state);
+        UpdateBoardUI();
 
         Debug.Log("이동 연출 대기 중...");
         await Task.Delay(1500);
@@ -163,9 +156,7 @@ public class YutManager : MonoBehaviour
 
         await Task.Delay(1000);
 
-        var state = MainGameManager.instance.boardStatusResponse;
-
-        string throwResultStr = TranslateYutResult(state.throwResult.yutResult.ToString());
+        string throwResultStr = TranslateYutResult(MainGameManager.instance.boardStatusResponse.throwResult.yutResult.result);
         Debug.Log($"추가 던지기 결과: {throwResultStr}");
 
         if (throwResultText != null)
@@ -180,8 +171,10 @@ public class YutManager : MonoBehaviour
     // =========================================================
     // 8. 보드 UI 갱신 로직 (그리드 중앙 정렬 및 업기 처리)
     // =========================================================
-    private void UpdateBoardUI(BoardStatusResponse state)
+    public void UpdateBoardUI()
     {
+        BoardStatusResponse state = MainGameManager.instance.boardStatusResponse;
+
         if (state.allPieces == null) return;
 
         int waitingCount = 0;
@@ -237,52 +230,17 @@ public class YutManager : MonoBehaviour
             }
         }
     }
-
-    // =======================================================
-    // 헬퍼: 막대기로 도개걸윷모 계산 (TAIL = 평평한 면 기준)
-    // =======================================================
-    private string CalculateYutResult(StickSide?[] publicSticks, StickSide?[] privateSticks)
+    private string TranslateYutResult(YutName enumName)
     {
-        int flatCount = 0; // 평평한 면(TAIL, BACK)의 개수
-        bool hasBackDo = false;
-
-        List<StickSide?> allSticks = new List<StickSide?>();
-        if (publicSticks != null) allSticks.AddRange(publicSticks);
-        if (privateSticks != null) allSticks.AddRange(privateSticks);
-
-        foreach (var stick in allSticks)
+        switch (enumName)
         {
-            // TAIL과 BACK을 평평한 면(배)으로 취급합니다.
-            if (stick == StickSide.TAIL) flatCount++;
-            else if (stick == StickSide.BACK)
-            {
-                flatCount++;
-                hasBackDo = true;
-            }
-        }
-
-        if (flatCount == 1 && hasBackDo) return "빽도";
-        if (flatCount == 1) return "도";
-        if (flatCount == 2) return "개";
-        if (flatCount == 3) return "걸";
-        if (flatCount == 4) return "윷";
-        if (flatCount == 0) return "모";
-
-        return "결과 오류";
-    }
-
-    private string TranslateYutResult(string enumName)
-    {
-        switch (enumName.ToUpper())
-        {
-            case "DO": return "도";
-            case "GAE": return "개";
-            case "GEOL": return "걸";
-            case "YUT": return "윷";
-            case "MO": return "모";
-            case "BACK_DO":
-            case "BACKDO": return "빽도";
-            default: return enumName;
+            case YutName.DO: return "도";
+            case YutName.GAE: return "개";
+            case YutName.GEOL: return "걸";
+            case YutName.YUT: return "윷";
+            case YutName.MO: return "모";
+            case YutName.BACK_DO: return "빽도";
+            default: return enumName.ToString();
         }
     }
 }
