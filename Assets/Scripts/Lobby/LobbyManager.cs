@@ -72,6 +72,8 @@ public class LobbyManager : MonoBehaviour
             if (PlayerManager.instance.currentRoom.started)
             {
                 MainGameManager.instance.currentClientScene = ClientScene.IN_GAME;
+                ServerManager.instance.GameStart();
+                ServerManager.instance.RoomStop();
                 isInLobby = false;
             }
         }

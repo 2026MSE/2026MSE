@@ -54,7 +54,7 @@ public class ServerManager : MonoBehaviour
             polling_cts = null;
         }
     }
-    void RoomStart()
+    public void RoomStart()
     {
         if(room_polling_cts != null)
         {
@@ -64,7 +64,7 @@ public class ServerManager : MonoBehaviour
         PollRoomStateServer(room_polling_cts.Token).Forget();
     }
 
-    void RoomStop()
+    public void RoomStop()
     {
         Debug.Log("RoomStop called");
         if (room_polling_cts != null)

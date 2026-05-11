@@ -140,7 +140,7 @@ public class YutManager : MonoBehaviour
         Debug.Log("이동 연출 대기 중...");
         await Task.Delay(1500);
 
-        if (state.extraTurn)
+        if (MainGameManager.instance.boardStatusResponse.extraTurn)
         {
             Debug.Log("한 번 더 던집니다! 버튼 활성화.");
             throwButton.gameObject.SetActive(true);
