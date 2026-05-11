@@ -68,14 +68,14 @@ public class MainGameManager : MonoBehaviour
 
         if (currentClientScene != ClientScene.IN_GAME)
             return;
-
+        // 현재 턴 플레이어가 아니면서 private room에 있는 경우 Main Hall로 이동
+        if (!playerManager.isMyTurn() && turnInfo.currentTurnPlayerRoom == Scene.PRIVATE_ROOM)
+        {
+            turnInfo.currentTurnPlayerRoom = Scene.MAIN_HALL;
+        }
         if (currentScene != turnInfo.currentTurnPlayerRoom)
         {
-            // 현재 턴 플레이어가 아니면서 private room에 있는 경우 씬 이동 X
-            if(!playerManager.isMyTurn() && turnInfo.currentTurnPlayerRoom == Scene.PRIVATE_ROOM)
-            {
-                return;
-            }
+            
 
             currentScene = turnInfo.currentTurnPlayerRoom;
             switch (currentScene)

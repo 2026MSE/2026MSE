@@ -47,7 +47,9 @@ public class YutManager : MonoBehaviour
 
     private void Update()
     {
-        if (MainGameManager.instance.boardStatusResponse == null) return;
+        // boardStatusResponse나 turnInfo가 아직 서버에서 오지 않았다면 대기
+        if (MainGameManager.instance.boardStatusResponse == null ||
+            MainGameManager.instance.turnInfo == null) return;
 
         // 1초 단위로 UI 갱신 (상대방 이동 동기화)
         syncTimer += Time.deltaTime;
@@ -57,20 +59,24 @@ public class YutManager : MonoBehaviour
             UpdateBoardUI(MainGameManager.instance.boardStatusResponse);
         }
 
-        // 자동 턴 전환 감지
-        bool isMyTurnNow = PlayerManager.instance.isMyTurn();
+        // [핵심 수정] 내 턴인지 + 현재 게임 상태가 '윷판(YUT_ROOM)'인지 동시에 확인
+        // MAIN_HALL로 윷을 던지러 넘어가야 하는 상황이면 YutManager는 작동을 멈춥니다.
+        bool isMyTurnInYutRoom = PlayerManager.instance.isMyTurn() &&
+                                 MainGameManager.instance.turnInfo.currentTurnPlayerRoom == Scene.YUT_ROOM;
 
-        if (!wasMyTurnLastFrame && isMyTurnNow)
+        // 윷판 페이즈에서 내 턴이 시작되었을 때만 OnMyTurnStarted 실행
+        if (!wasMyTurnLastFrame && isMyTurnInYutRoom)
         {
             OnMyTurnStarted();
         }
-        else if (wasMyTurnLastFrame && !isMyTurnNow)
+        // 턴이 끝났거나, 내 턴이더라도 씬이 MAIN_HALL로 넘어갈 준비를 할 때
+        else if (wasMyTurnLastFrame && !isMyTurnInYutRoom)
         {
-            Debug.Log("내 턴이 종료되었습니다. 상대방을 기다립니다.");
+            Debug.Log("내 턴이 종료되었거나 씬 전환을 대기 중입니다. 버튼을 숨깁니다.");
             throwButton.gameObject.SetActive(false);
         }
 
-        wasMyTurnLastFrame = isMyTurnNow;
+        wasMyTurnLastFrame = isMyTurnInYutRoom;
     }
 
     public void RegisterPiece(PieceController piece)
