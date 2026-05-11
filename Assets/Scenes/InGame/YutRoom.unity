@@ -3095,7 +3095,7 @@ MonoBehaviour:
   finishArea: {fileID: 76984472}
   throwButton: {fileID: 323981625}
   throwResultText: {fileID: 12867299}
-  spacing: 2
+  spacing: 3
   maxPerRow: 4
   maxRows: 4
   piggybackHeight: 1

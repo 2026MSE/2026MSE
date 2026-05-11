@@ -26,8 +26,8 @@ public class YutState : MonoBehaviour
     {
         if (stickSide == StickSide.HEAD)
         {
-            head_object.SetActive(false);
-            tail_object.SetActive(true);
+            head_object.SetActive(true);
+            tail_object.SetActive(false);
             back_object.SetActive(false);
         }
         else if (stickSide == StickSide.BACK)
@@ -38,8 +38,8 @@ public class YutState : MonoBehaviour
         }
         else
         {
-            head_object.SetActive(true);
-            tail_object.SetActive(false);
+            head_object.SetActive(false);
+            tail_object.SetActive(true);
             back_object.SetActive(false);
         }
         previousSide = stickSide;

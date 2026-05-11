@@ -29,6 +29,7 @@ public class YutManager : MonoBehaviour
 
     private Dictionary<string, PieceController> allPiecesDict = new Dictionary<string, PieceController>();
 
+    // 턴 전환 감지 및 동기화용 변수
     private bool wasMyTurnLastFrame = false;
     private float syncTimer = 0f;
 
@@ -48,6 +49,7 @@ public class YutManager : MonoBehaviour
     {
         if (MainGameManager.instance.boardStatusResponse == null) return;
 
+        // 1초 단위로 UI 갱신 (상대방 이동 동기화)
         syncTimer += Time.deltaTime;
         if (syncTimer >= 1f)
         {
@@ -55,6 +57,7 @@ public class YutManager : MonoBehaviour
             UpdateBoardUI(MainGameManager.instance.boardStatusResponse);
         }
 
+        // 자동 턴 전환 감지
         bool isMyTurnNow = PlayerManager.instance.isMyTurn();
 
         if (!wasMyTurnLastFrame && isMyTurnNow)
@@ -84,7 +87,7 @@ public class YutManager : MonoBehaviour
     }
 
     // =========================================================
-    // [최초 턴 시작]
+    // [최초 턴 시작] HallInfoResponse 기반
     // =========================================================
     private void OnMyTurnStarted()
     {
@@ -128,6 +131,7 @@ public class YutManager : MonoBehaviour
 
         await ServerManager.instance.MovePieceRequest(pieceId);
 
+        // ServerManager의 폴링 대기
         await Task.Delay(1000);
 
         var state = MainGameManager.instance.boardStatusResponse;
@@ -149,7 +153,7 @@ public class YutManager : MonoBehaviour
     }
 
     // =========================================================
-    // [추가 턴 시작]
+    // [추가 턴 시작] ThrowResponse 기반
     // =========================================================
     private async void OnThrowButtonClicked()
     {
@@ -174,7 +178,7 @@ public class YutManager : MonoBehaviour
     }
 
     // =========================================================
-    // 8. 보드 UI 갱신 로직 
+    // 8. 보드 UI 갱신 로직 (그리드 중앙 정렬 및 업기 처리)
     // =========================================================
     private void UpdateBoardUI(BoardStatusResponse state)
     {
@@ -235,11 +239,11 @@ public class YutManager : MonoBehaviour
     }
 
     // =======================================================
-    // 헬퍼: 막대기로 도개걸윷모 계산 (HEAD = 평평한 면 기준 복구)
+    // 헬퍼: 막대기로 도개걸윷모 계산 (TAIL = 평평한 면 기준)
     // =======================================================
     private string CalculateYutResult(StickSide?[] publicSticks, StickSide?[] privateSticks)
     {
-        int flatCount = 0; // 평평한 면(HEAD, BACK)의 개수
+        int flatCount = 0; // 평평한 면(TAIL, BACK)의 개수
         bool hasBackDo = false;
 
         List<StickSide?> allSticks = new List<StickSide?>();
@@ -248,8 +252,8 @@ public class YutManager : MonoBehaviour
 
         foreach (var stick in allSticks)
         {
-            // 복구됨: HEAD와 BACK을 평평한 면으로 취급합니다.
-            if (stick == StickSide.HEAD) flatCount++;
+            // TAIL과 BACK을 평평한 면(배)으로 취급합니다.
+            if (stick == StickSide.TAIL) flatCount++;
             else if (stick == StickSide.BACK)
             {
                 flatCount++;

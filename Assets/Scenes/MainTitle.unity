@@ -830,7 +830,7 @@ MonoBehaviour:
   isUsingServer: 1
   serverUrl: http://localhost:8080
   pollInterval: 1
-  is_debugging: 1
+  is_debugging: 0
   test_plane: {fileID: 1847326998}
 --- !u!4 &1479886516
 Transform:
