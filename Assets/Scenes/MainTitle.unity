@@ -151,8 +151,71 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 414b48b93a5650342aa28d17d4fe42bf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  gameState:
+    logs: []
+    roomInfo:
+      roomId: 
+      playerIds: []
+      hostId: 
+      started: 0
+    turnInfo:
+      currentTurnPlayerId: 
+      turnOrder: []
+      currentTurnIndex: 0
+    turnPhase: 0
+    players: []
+    firstChallenger: 
+    challengeQueue: []
+    currentYutResult:
+      result: 0
+      move: 0
+      extraTurn: 0
+    pendingYutResults: []
+    lastJudgeResponse:
+      judgeResult: 0
+      challengerId: 
+      turnPlayerId: 
+      actualResult:
+        result: 0
+        move: 0
+        extraTurn: 0
+      rewardChanceCard: 0
+      rewardCard: 
+      penaltyType: 
+      penaltyApplied: 0
+      penaltyPieceId: 
+    challengeDeadlineMillis: 0
+    serverTimeMillis: 0
+    winnerId: 
+  nextSceneName: 
+  nextSceneLoadMode: 0
+  turnInfo:
+    currentTurnPlayerId: 
+    turnOrder: []
+    currentTurnIndex: 0
+  turnPhase: 0
+  throwResponse:
+    yutResult:
+      result: 0
+      move: 0
+      extraTurn: 0
+  moveListResponse:
+    moveGroups: []
+  lastJudgeResponse:
+    judgeResult: 0
+    challengerId: 
+    turnPlayerId: 
+    actualResult:
+      result: 0
+      move: 0
+      extraTurn: 0
+    rewardChanceCard: 0
+    rewardCard: 
+    penaltyType: 
+    penaltyApplied: 0
+    penaltyPieceId: 
   currentClientScene: 0
-  gotoSceneName: MainGameUI
+  currentGameViewScene: 0
 --- !u!4 &159101422
 Transform:
   m_ObjectHideFlags: 0
@@ -726,6 +789,11 @@ PrefabInstance:
       propertyPath: targetIntensity
       value: 0.1
       objectReference: {fileID: 0}
+    - target: {fileID: 2785478439512794565, guid: 04768d088223be643b35f7dec80b340b,
+        type: 3}
+      propertyPath: useLoadingScene
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2871417774946148172, guid: 04768d088223be643b35f7dec80b340b,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -982,6 +1050,11 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 2785478439512794565, guid: e0e3bea4d31b43b42bee63975df5dd7e,
         type: 3}
+      propertyPath: loadMode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2785478439512794565, guid: e0e3bea4d31b43b42bee63975df5dd7e,
+        type: 3}
       propertyPath: gotoSceneName
       value: 2
       objectReference: {fileID: 0}
@@ -1088,6 +1161,11 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 2785478439512794565, guid: 296f4e47ff4befb4e8e2b5536e30bf6d,
         type: 3}
+      propertyPath: loadMode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2785478439512794565, guid: 296f4e47ff4befb4e8e2b5536e30bf6d,
+        type: 3}
       propertyPath: gotoSceneName
       value: 4
       objectReference: {fileID: 0}
@@ -1100,6 +1178,11 @@ PrefabInstance:
         type: 3}
       propertyPath: targetIntensity
       value: 0.1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2785478439512794565, guid: 296f4e47ff4befb4e8e2b5536e30bf6d,
+        type: 3}
+      propertyPath: useLoadingScene
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2871417774946148172, guid: 296f4e47ff4befb4e8e2b5536e30bf6d,
         type: 3}

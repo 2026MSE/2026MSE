@@ -1,32 +1,77 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class YutBoardInitializer : MonoBehaviour
 {
     [Header("윷말 프리팹 설정")]
-    public GameObject myPiecePrefab;       // 내 윷말 프리팹 (파란색 등)
-    public GameObject opponentPiecePrefab; // 상대방 윷말 프리팹 (빨간색 등)
+    public GameObject myPiecePrefab;
+    public GameObject opponentPiecePrefab;
 
-    [Header("생성될 말들을 묶어둘 부모 폴더 (선택사항)")]
+    [Header("생성될 말들을 묶어둘 부모 폴더")]
     public Transform pieceContainer;
 
-    private async void Start()
-    {
-        Debug.Log("윷놀이 씬 초기화 시작...");
-        await ServerManager.instance.BoardStateRequest();
-        var state = MainGameManager.instance.boardStatusResponse;
+    [Header("초기화 설정")]
+    public float waitInterval = 0.2f;
+    public float maxWaitTime = 10f;
 
-        if (state == null || state.allPieces == null)
+    private bool initialized = false;
+
+    private IEnumerator Start()
+    {
+        Debug.Log("[YutBoardInitializer] 윷놀이 보드 초기화 대기 시작");
+
+        float elapsed = 0f;
+
+        while (elapsed < maxWaitTime)
         {
-            Debug.LogError("보드 상태를 불러오지 못했습니다. 서버 상태를 확인하세요.");
-            return;
+            if (CanInitialize())
+            {
+                InitializeBoard();
+                yield break;
+            }
+
+            elapsed += waitInterval;
+            yield return new WaitForSeconds(waitInterval);
         }
 
-        // 2. 보드 상태를 바탕으로 윷말들을 맵에 생성합니다.
+        Debug.LogError("[YutBoardInitializer] 보드 상태를 불러오지 못했습니다. /game/state polling과 MainGameManager 상태를 확인하세요.");
+    }
+
+    private bool CanInitialize()
+    {
+        if (initialized) return false;
+
+        if (MainGameManager.instance == null) return false;
+        if (PlayerManager.instance == null) return false;
+        if (PlayerManager.instance.this_player == null) return false;
+
+        BoardStatusResponse state = MainGameManager.instance.boardStatusResponse;
+
+        if (state == null) return false;
+        if (state.allPieces == null) return false;
+
+        return true;
+    }
+
+    private void InitializeBoard()
+    {
+        initialized = true;
+
+        BoardStatusResponse state = MainGameManager.instance.boardStatusResponse;
+
         SpawnPieces(state.allPieces);
 
-        // 3. 생성이 끝났으면 YutManager에게 "이제 턴 확인하고 게임을 시작해!" 라고 알립니다.
-        YutManager.Instance.StartGameAfterInit(state);
+        if (YutManager.Instance != null)
+        {
+            YutManager.Instance.StartGameAfterInit(state);
+        }
+        else
+        {
+            Debug.LogWarning("[YutBoardInitializer] YutManager.Instance가 없습니다.");
+        }
+
+        Debug.Log("[YutBoardInitializer] 윷말 생성 및 보드 초기화 완료");
     }
 
     private void SpawnPieces(Dictionary<string, List<Piece>> allPieces)
@@ -38,30 +83,46 @@ public class YutBoardInitializer : MonoBehaviour
             string ownerId = kvp.Key;
             List<Piece> pieces = kvp.Value;
 
-            // 내 말인지 상대 말인지에 따라 프리팹 다르게 선택
-            GameObject prefabToUse = (ownerId == myPlayerId) ? myPiecePrefab : opponentPiecePrefab;
+            if (pieces == null) continue;
 
-            foreach (var pieceData in pieces)
+            GameObject prefabToUse = ownerId == myPlayerId
+                ? myPiecePrefab
+                : opponentPiecePrefab;
+
+            if (prefabToUse == null)
             {
-                // 말 프리팹 생성
-                GameObject newPiece = Instantiate(prefabToUse, Vector3.zero, Quaternion.identity, pieceContainer);
-                newPiece.name = $"Piece_{pieceData.id}"; // 하이어라키에서 보기 좋게 이름 변경
+                Debug.LogError($"[YutBoardInitializer] 사용할 말 프리팹이 없습니다. ownerId={ownerId}");
+                continue;
+            }
 
-                // PieceController에 서버 ID 부여
+            foreach (Piece pieceData in pieces)
+            {
+                if (pieceData == null) continue;
+
+                GameObject newPiece = Instantiate(
+                    prefabToUse,
+                    Vector3.zero,
+                    Quaternion.identity,
+                    pieceContainer
+                );
+
+                newPiece.name = $"Piece_{pieceData.id}";
+
                 PieceController controller = newPiece.GetComponent<PieceController>();
-                if (controller != null)
-                {
-                    controller.pieceId = pieceData.id;
 
-                    // 생성된 말을 YutManager의 딕셔너리에 수동 등록
-                    YutManager.Instance.RegisterPiece(controller);
-                }
-                else
+                if (controller == null)
                 {
-                    Debug.LogWarning("윷말 프리팹에 PieceController 스크립트가 없습니다!");
+                    Debug.LogWarning("[YutBoardInitializer] 윷말 프리팹에 PieceController가 없습니다.");
+                    continue;
+                }
+
+                controller.pieceId = pieceData.id;
+
+                if (YutManager.Instance != null)
+                {
+                    YutManager.Instance.RegisterPiece(controller);
                 }
             }
         }
-        Debug.Log("윷말 생성 완료!");
     }
 }

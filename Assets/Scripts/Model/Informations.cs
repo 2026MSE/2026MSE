@@ -1,25 +1,15 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public enum ChanceCards
-{
-    
-}
+//
+// ===============================
+// Client-only Scene State
+// ===============================
+// 서버에서 오는 상태가 아니라, Unity 클라이언트 화면 전환용으로만 사용
+//
 
-public enum Scene
-{
-    NONE,
-    TITLE,
-    OPTION,
-    EXIT,
-    MAIN_HALL,
-    PRIVATE_ROOM,
-    YUT_ROOM,
-    CHALLENGE_ROOM
-}
-
+[Serializable]
 public enum ClientScene
 {
     NONE,
@@ -30,72 +20,117 @@ public enum ClientScene
     IN_GAME
 }
 
-[System.Serializable]
-public class PlayerInfo
+[Serializable]
+public enum ClientSceneLoadMode
 {
-
-    public string playerId;
-    public string name;
-
-    public string currentEmoticon = "";
-    public string profileUrl;
-
-    public List<string> inventory;
+    Single,
+    Additive
 }
-[System.Serializable]
-public class TurnInfo
+
+// 필요하면 Unity 내부 화면 구분용으로 유지 가능
+// 단, 서버 상태 판단에는 사용하지 않는 것을 권장
+[Serializable]
+public enum GameViewScene
 {
-
-    public string currentTurnPlayerId;
-    public Scene? currentTurnPlayerRoom = Scene.MAIN_HALL;
-
-    public List<string> turnOrder;
-    public int currentTurnIndex;
-
+    NONE,
+    MAIN_HALL,
+    PRIVATE_ROOM,
+    YUT_ROOM,
+    CHALLENGE_RESULT,
+    GAME_RESULT
 }
-[System.Serializable]
+
+//
+// ===============================
+// Common API Wrapper
+// ===============================
+//
+
+[Serializable]
+public class ApiResponse<T>
+{
+    public bool success;
+    public string message;
+    public string errorCode;
+    public T data;
+}
+
+//
+// ===============================
+// Player / Room
+// ===============================
+//
+
+[Serializable]
 public class Player
 {
     public string name;
     public string profileUrl;
     public string id;
-
 }
-[System.Serializable]
-public enum HallState
+
+[Serializable]
+public class PlayerInfo
 {
-    DECLARE,
-    IDLE1,
-    CHALLENGE,
-    IDLE2,
-}
-[System.Serializable]
-public class ApiResponse<T>
-{
-
-    public bool success;
-    public string message;
-    public T data;
+    public string playerId;
+    public string name;
+    public string currentEmoticon = "";
+    public string profileUrl = "";
+    public List<string> inventory = new List<string>();
 }
 
-[System.Serializable]
+[Serializable]
 public class RoomInfo
 {
-
     public string roomId;
     public List<string> playerIds;
     public string hostId;
-
     public bool started;
+}
 
-}
-[System.Serializable]
-public class GameActionRequest
+//
+// ===============================
+// Turn / Phase
+// ===============================
+//
+
+[Serializable]
+public class TurnInfo
 {
-    public string roomId;
-    public string playerId;
+    public string currentTurnPlayerId;
+    public List<string> turnOrder;
+    public int currentTurnIndex;
 }
-[System.Serializable]
+
+[Serializable]
+public enum TurnPhase
+{
+    WAITING,
+    PRIVATE_THROW,
+    MAIN_HALL_DECLARE,
+    MAIN_HALL_CHALLENGE,
+    CATCH_BONUS_THROW,
+    YUT_MOVE,
+    YUT_MOVE_DONE,
+    TURN_END,
+    GAME_OVER
+}
+
+//
+// ===============================
+// Yut / Stick
+// ===============================
+//
+
+[Serializable]
+public enum StickSide
+{
+    HEAD,
+    TAIL,
+    BACK
+}
+
+[Serializable]
 public enum YutName
 {
     BACK_DO,
@@ -105,109 +140,216 @@ public enum YutName
     YUT,
     MO
 }
-[System.Serializable]
+
+[Serializable]
 public class YutResult
 {
-
     public YutName result;
     public int move;
     public bool extraTurn;
-
 }
 
-[System.Serializable]
+[Serializable]
 public class ThrowResponse
 {
-
     public StickSide?[] sticks;
     public StickSide?[] privateSticks;
     public StickSide?[] publicSticks;
-
     public YutResult yutResult;
 }
 
-[System.Serializable]
+//
+// ===============================
+// Game State Polling
+// ===============================
+// /game/state 응답용
+//
+
+[Serializable]
+public class GameStateResponse
+{
+    public List<GameLog> logs;
+
+    public RoomInfo roomInfo;
+    public TurnInfo turnInfo;
+    public TurnPhase turnPhase;
+
+    public BoardStatusResponse boardStatus;
+    public List<PlayerInfo> players;
+
+    public StickSide?[] privateSticks;
+    public StickSide?[] publicSticks;
+    public StickSide?[] declaredPrivateSticks;
+
+    public string firstChallenger;
+    public List<string> challengeQueue;
+    public Dictionary<string, bool> challengeVotes;
+
+    public YutResult currentYutResult;
+    public List<YutResult> pendingYutResults;
+
+    public JudgeResponse lastJudgeResponse;
+
+    public long challengeDeadlineMillis;
+    public long serverTimeMillis;
+
+    public string winnerId;
+}
+
+[Serializable]
+public class GameLog
+{
+    public string type;
+    public string message;
+    public long timeMillis;
+}
+
+//
+// ===============================
+// Board / Piece
+// ===============================
+//
+
+[Serializable]
 public class BoardStatusResponse
 {
     public Dictionary<string, List<Piece>> allPieces;
-
-    public bool extraTurn;
-    public ThrowResponse throwResult;
-
-    public string currentTurnPlayerId;
-    public Scene currentRoom;
-
-    public bool alreadyThrown;
-    public bool alreadyMoved;
-
-    public HallState hallState;
 }
 
-[System.Serializable]
-public class MoveRequest
-{
-    public string roomId;
-    public string playerId;
-    public string pieceId;
-}
-
-[System.Serializable]
-public class MoveListResponse
-{
-    public List<MoveOption> movablePieces;
-}
-[System.Serializable]
+[Serializable]
 public class Piece
 {
     public string id;
     public string ownerId;
     public int currentPosition;
-
-    public List<Piece> carriedPieces;
+    public List<Piece> carriedPieces = new List<Piece>();
+    public string carriedByPieceId;
 }
-[System.Serializable]
+
+//
+// ===============================
+// Move
+// ===============================
+//
+
+[Serializable]
+public class MoveRequest
+{
+    public string roomId;
+    public string playerId;
+    public string pieceId;
+
+    // 서버 신버전에서 추가됨
+    // pendingYutResults 중 몇 번째 윷 결과를 사용할지 선택
+    public int yutResultIndex;
+}
+
+[Serializable]
+public class MoveListResponse
+{
+    public List<MoveGroup> moveGroups;
+}
+
+[Serializable]
+public class MoveGroup
+{
+    public int yutResultIndex;
+    public YutName yutName;
+    public int move;
+    public List<MoveOption> movablePieces;
+}
+
+[Serializable]
 public class MoveOption
 {
     public string pieceId;
     public int currentPosition;
     public int targetPosition;
     public bool finished;
+    public MoveType moveType;
 }
-[System.Serializable]
-public class HallInfoResponse
-{
-    public HallState state;
 
-    public StickSide?[] publicSticks;
-    public StickSide?[] declaredPrivateSticks;
-
-    public string firstChallenger;
-    public List<string> queue;
-}
-[System.Serializable]
-public enum StickSide
+[Serializable]
+public enum MoveType
 {
-    HEAD,
-    TAIL,
-    BACK
+    NORMAL,
+    CATCH,
+    FINISH
 }
-[System.Serializable]
+
+[Serializable]
+public class MoveResultResponse
+{
+    public string pieceId;
+    public int fromPosition;
+    public int toPosition;
+    public MoveType moveType;
+    public bool extraTurn;
+    public bool gameOver;
+    public string winnerId;
+}
+
+//
+// ===============================
+// Hall / Declare / Challenge
+// ===============================
+//
+
+[Serializable]
 public class DeclareRequest
 {
-
     public string roomId;
     public string playerId;
-
     public StickSide s1;
     public StickSide s2;
 }
-[System.Serializable]
-public class DeclareResponse
-{
-    public string message;
 
+[Serializable]
+public class ChallengeVoteRequest
+{
+    public string roomId;
+    public string playerId;
+    public bool challenge;
+}
+
+[Serializable]
+public class JudgeResponse
+{
+    public JudgeResult judgeResult;
+
+    public string challengerId;
+    public string turnPlayerId;
+
+    public StickSide?[] actualPrivateSticks;
     public StickSide?[] declaredPrivateSticks;
     public StickSide?[] publicSticks;
 
-    public HallState state;
+    public YutResult actualResult;
+
+    public bool rewardChanceCard;
+    public string rewardCard;
+
+    public string penaltyType;
+    public bool penaltyApplied;
+    public string penaltyPieceId;
+}
+
+[Serializable]
+public enum JudgeResult
+{
+    CHALLENGE_SUCCESS,
+    CHALLENGE_FAIL
+}
+
+//
+// ===============================
+// Request DTO
+// ===============================
+//
+
+[Serializable]
+public class GameActionRequest
+{
+    public string roomId;
+    public string playerId;
 }

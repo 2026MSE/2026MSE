@@ -134,8 +134,6 @@ public class PrivateRoom_GameManager : MonoBehaviour
 
         if (ServerManager.instance.isUsingServer)
             ServerManager.instance.PrivateExitRequest().Forget();
-        else
-            MainGameManager.instance.turnInfo = new TurnInfo { currentTurnPlayerRoom = Scene.MAIN_HALL }; // 테스트용 더미 데이터
         state = PrivateRoomState.None;
     }
     public async UniTaskVoid GetYutResult()
