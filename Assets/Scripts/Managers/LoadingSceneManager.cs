@@ -6,106 +6,59 @@ using UnityEngine.UI;
 
 public class LoadingSceneManager : MonoBehaviour
 {
-    [Header("Loading Target")]
-    public string nextSceneName;
+    public string nextSceneName; // 이동할 다음 씬의 이름
+    public Slider loadingBar;    // 로딩 진행도를 보여줄 UI 슬라이더
+    public TextMeshProUGUI progressText;    // "50%" 처럼 보여줄 텍스트
 
-    [Header("Loading UI")]
-    public Slider loadingBar;
-    public TextMeshProUGUI progressText;
-
-    [Header("Option")]
-    public float minimumLoadingTime = 0.5f;
-
-    private ClientSceneLoadMode loadMode = ClientSceneLoadMode.Single;
-
-    private void Start()
+    void Start()
     {
+        // 로딩 씬이 시작되자마자 다음 씬을 비동기로 불러오는 코루틴 실행
         StartCoroutine(LoadNextSceneRoutine());
     }
 
-    private IEnumerator LoadNextSceneRoutine()
+    IEnumerator LoadNextSceneRoutine()
     {
-        ResolveNextSceneInfo();
+        nextSceneName = MainGameManager.instance.GetGotoSceneName(); // 다음 씬 이름을 가져와서 nextSceneName에 저장 (MainGameManager에서 설정한 씬 이름)
 
-        if (string.IsNullOrEmpty(nextSceneName))
-        {
-            Debug.LogWarning("[LoadingSceneManager] nextSceneName이 비어 있어서 MainHall로 이동합니다.");
-            nextSceneName = "MainHall";
-            loadMode = ClientSceneLoadMode.Single;
-        }
+        // 1. 비동기 로딩 시작
+        AsyncOperation op = SceneManager.LoadSceneAsync(nextSceneName);
 
-        LoadSceneMode unityLoadMode =
-            loadMode == ClientSceneLoadMode.Additive
-                ? LoadSceneMode.Additive
-                : LoadSceneMode.Single;
-
-        Scene alreadyLoadedScene = SceneManager.GetSceneByName(nextSceneName);
-
-        if (loadMode == ClientSceneLoadMode.Additive && alreadyLoadedScene.isLoaded)
-        {
-            SceneManager.SetActiveScene(alreadyLoadedScene);
-            yield break;
-        }
-
-        AsyncOperation op = SceneManager.LoadSceneAsync(nextSceneName, unityLoadMode);
+        // 로딩이 100% 완료되어도 자동으로 씬을 넘기지 않도록 설정 (선택 사항)
         op.allowSceneActivation = false;
 
-        float timer = 0f;
+        float timer = 0.0f; // 페이크 로딩이나 부드러운 UI 처리를 위한 타이머
 
+        // 2. 로딩이 완료될 때까지 반복
         while (!op.isDone)
         {
+            yield return null; // 1프레임 대기
             timer += Time.deltaTime;
 
-            float realProgress = Mathf.Clamp01(op.progress / 0.9f);
-            float timeProgress = Mathf.Clamp01(timer / minimumLoadingTime);
-            float displayProgress = Mathf.Min(realProgress, timeProgress);
-
-            if (loadingBar != null)
-                loadingBar.value = displayProgress;
-
-            if (progressText != null)
-                progressText.text = (displayProgress * 100f).ToString("F0") + "%";
-
-            if (op.progress >= 0.9f && timer >= minimumLoadingTime)
+            // op.progress는 0.0 부터 0.9까지만 오름 (0.9가 로딩 완료, 1.0은 씬 활성화)
+            if (op.progress < 0.9f)
             {
-                if (loadingBar != null)
-                    loadingBar.value = 1f;
+                loadingBar.value = Mathf.Lerp(loadingBar.value, op.progress, timer);
+                if (loadingBar.value >= op.progress)
+                {
+                    timer = 0f;
+                }
+            }
+            else // 로딩이 실제로는 다 끝난 상태 (0.9)
+            {
+                // UI 바를 1.0(100%)까지 부드럽게 채움
+                loadingBar.value = Mathf.Lerp(loadingBar.value, 1f, timer);
 
-                if (progressText != null)
-                    progressText.text = "100%";
-
-                op.allowSceneActivation = true;
+                // 로딩 바가 완전히 다 찼다면
+                if (loadingBar.value == 1.0f)
+                {
+                    // "아무 키나 누르세요" 텍스트를 띄우거나 바로 넘어가게 할 수 있습니다.
+                    // 여기서는 바로 넘어가도록 설정
+                    op.allowSceneActivation = true;
+                }
             }
 
-            yield return null;
+            // 텍스트 퍼센트 업데이트
+            progressText.text = (loadingBar.value * 100f).ToString("F0") + "%";
         }
-
-        if (loadMode == ClientSceneLoadMode.Additive)
-        {
-            Scene loadedScene = SceneManager.GetSceneByName(nextSceneName);
-
-            if (loadedScene.IsValid() && loadedScene.isLoaded)
-            {
-                SceneManager.SetActiveScene(loadedScene);
-            }
-        }
-    }
-
-    private void ResolveNextSceneInfo()
-    {
-        if (MainGameManager.instance == null)
-        {
-            Debug.LogWarning("[LoadingSceneManager] MainGameManager.instance가 없습니다.");
-            return;
-        }
-
-        loadMode = MainGameManager.instance.nextSceneLoadMode;
-
-        if (!string.IsNullOrEmpty(nextSceneName))
-        {
-            return;
-        }
-
-        nextSceneName = MainGameManager.instance.GetGotoSceneName();
     }
 }

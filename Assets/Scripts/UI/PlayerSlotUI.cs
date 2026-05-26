@@ -1,54 +1,27 @@
-using TMPro;
 using UnityEngine;
+using TMPro;
 
 public class PlayerSlotUI : MonoBehaviour
 {
-    [Header("Slot Visual")]
     public GameObject emptyVisual;
     public GameObject filledVisual;
-
-    [Header("Text")]
-    public TMP_Text playerNameText;
-
-    private void Awake()
-    {
-        ResolveReferences();
-    }
+    private TMP_Text playerNameText;
 
     private void OnEnable()
     {
-        ResolveReferences();
-    }
-
-    private void ResolveReferences()
-    {
-        if (playerNameText == null && filledVisual != null)
-        {
-            playerNameText = filledVisual.GetComponentInChildren<TMP_Text>(true);
-        }
+        playerNameText = filledVisual.GetComponentInChildren<TMP_Text>();
     }
 
     public void SetEmpty()
     {
-        if (emptyVisual != null)
-            emptyVisual.SetActive(true);
-
-        if (filledVisual != null)
-            filledVisual.SetActive(false);
-
-        if (playerNameText != null)
-            playerNameText.text = "";
+        emptyVisual.SetActive(true);
+        filledVisual.SetActive(false);
     }
 
     public void SetPlayer(string name)
     {
-        if (emptyVisual != null)
-            emptyVisual.SetActive(false);
-
-        if (filledVisual != null)
-            filledVisual.SetActive(true);
-
-        if (playerNameText != null)
-            playerNameText.text = string.IsNullOrEmpty(name) ? "Unknown" : name;
+        emptyVisual.SetActive(false);
+        filledVisual.SetActive(true);
+        playerNameText.text = name;
     }
 }

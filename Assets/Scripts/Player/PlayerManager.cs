@@ -13,19 +13,11 @@ public class PlayerManager : MonoBehaviour
 
     public bool isMyTurn()
     {
-        if (MainGameManager.instance == null)
-            return false;
-
-        if (MainGameManager.instance.turnInfo == null)
-            return false;
-
-        if (this_player == null)
-            return false;
-
-        if (string.IsNullOrEmpty(this_player.id))
-            return false;
-
-        return MainGameManager.instance.turnInfo.currentTurnPlayerId == this_player.id;
+        if (MainGameManager.instance.turnInfo.currentTurnPlayerId == this_player.id)
+        {
+            return true;
+        }
+        return false;
     }
 
     void Awake()
@@ -44,19 +36,7 @@ public class PlayerManager : MonoBehaviour
 
     public void createPlayer(string name, string style = "adventurer")
     {
-        if (string.IsNullOrWhiteSpace(name))
-        {
-            Debug.LogWarning("[PlayerManager] player name is empty.");
-            return;
-        }
-
-        if (ServerManager.instance == null)
-        {
-            Debug.LogWarning("[PlayerManager] ServerManager.instance is null.");
-            return;
-        }
-
-        ServerManager.instance.PlayerRequest(name.Trim(), style).Forget();
+        ServerManager.instance.PlayerRequest(name, style).Forget();
     }
 
 }

@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -6,117 +7,58 @@ public class PlayerLobby : MonoBehaviour
     [Header("UI References")]
     public PlayerSlotUI[] playerSlots;
 
-    [Header("Option")]
     public int maxPlayers = 4;
 
-    private PlayerManager playerManager;
+    // 방 인원수와 리스트 인원수를 각각 따로 추적합니다.
+    private int lastRoomIdCount = 0;
+    private int lastPlayerListCount = 0;
 
-    private int lastPlayerListCount = -1;
-    private int lastRoomIdCount = -1;
-    private string lastRoomId = "";
+    private PlayerManager player_manager;
 
     private void OnEnable()
     {
-        Debug.Log("[PlayerLobby] OnEnable");
-
-        playerManager = PlayerManager.instance;
-
-        ClearSlots();
-        ForceUpdateRoomUI();
+        Debug.Log("PlayerLobby Start");
+        player_manager = PlayerManager.instance;
     }
 
     private void Update()
     {
-        if (playerManager == null)
-            playerManager = PlayerManager.instance;
-
-        if (playerManager == null)
+        if (player_manager.currentRoom != null)
         {
-            ClearSlots();
-            return;
-        }
+            int currentRoomCount = player_manager.currentRoom.playerIds.Count;
+            int currentListCount = player_manager.playerList != null ? player_manager.playerList.Count : 0;
 
-        int currentPlayerListCount =
-            playerManager.playerList != null ? playerManager.playerList.Count : 0;
+            // 방의 ID 개수가 바뀌었거나, 폴링을 통해 실제 플레이어 정보 리스트 개수가 바뀌었을 때 UI 갱신
+            if (currentRoomCount != lastRoomIdCount || currentListCount != lastPlayerListCount)
+            {
+                UpdateRoomUI();
 
-        int currentRoomIdCount =
-            playerManager.currentRoom != null &&
-            playerManager.currentRoom.playerIds != null
-                ? playerManager.currentRoom.playerIds.Count
-                : 0;
-
-        string currentRoomId =
-            playerManager.currentRoom != null
-                ? playerManager.currentRoom.roomId
-                : "";
-
-        if (currentPlayerListCount != lastPlayerListCount ||
-            currentRoomIdCount != lastRoomIdCount ||
-            currentRoomId != lastRoomId)
-        {
-            ForceUpdateRoomUI();
-
-            lastPlayerListCount = currentPlayerListCount;
-            lastRoomIdCount = currentRoomIdCount;
-            lastRoomId = currentRoomId;
+                // 마지막으로 UI를 갱신했던 시점의 개수를 저장
+                lastRoomIdCount = currentRoomCount;
+                lastPlayerListCount = currentListCount;
+            }
         }
     }
 
-    public void ForceUpdateRoomUI()
+    private void UpdateRoomUI()
     {
-        if (playerSlots == null || playerSlots.Length == 0)
-            return;
-
-        List<PlayerInfo> playerInfos =
-            playerManager != null ? playerManager.playerList : null;
-
-        RoomInfo roomInfo =
-            playerManager != null ? playerManager.currentRoom : null;
+        Debug.Log("UpdateRoomUI");
 
         for (int i = 0; i < playerSlots.Length; i++)
         {
-            if (playerSlots[i] == null)
-                continue;
-
-            // 1순위: 서버에서 받은 플레이어 상세 정보
-            if (playerInfos != null && i < playerInfos.Count && playerInfos[i] != null)
+            // [핵심 해결 부분] 
+            // i가 방 인원수보다 작고, '동시에' 아직 서버에서 받아온 playerList의 개수보다도 작을 때만 접근합니다.
+            if (i < player_manager.currentRoom.playerIds.Count &&
+                player_manager.playerList != null &&
+                i < player_manager.playerList.Count)
             {
-                string displayName = playerInfos[i].name;
-
-                if (string.IsNullOrEmpty(displayName))
-                    displayName = playerInfos[i].playerId;
-
-                playerSlots[i].SetPlayer(displayName);
-                continue;
+                playerSlots[i].SetPlayer(player_manager.playerList[i].name);
             }
-
-            // 2순위: 아직 상세 정보가 안 왔으면 playerId라도 표시
-            if (roomInfo != null &&
-                roomInfo.playerIds != null &&
-                i < roomInfo.playerIds.Count)
+            else
             {
-                string playerId = roomInfo.playerIds[i];
-
-                if (!string.IsNullOrEmpty(playerId))
-                {
-                    playerSlots[i].SetPlayer("Player " + (i + 1));
-                    continue;
-                }
+                // 정보가 아직 덜 왔거나 빈 자리라면 일단 Empty 처리
+                playerSlots[i].SetEmpty();
             }
-
-            playerSlots[i].SetEmpty();
-        }
-    }
-
-    private void ClearSlots()
-    {
-        if (playerSlots == null)
-            return;
-
-        foreach (PlayerSlotUI slot in playerSlots)
-        {
-            if (slot != null)
-                slot.SetEmpty();
         }
     }
 }

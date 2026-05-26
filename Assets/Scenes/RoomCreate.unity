@@ -783,7 +783,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   emptyVisual: {fileID: 92671699}
   filledVisual: {fileID: 1256020792}
-  playerNameText: {fileID: 0}
 --- !u!1 &262902173
 GameObject:
   m_ObjectHideFlags: 0
@@ -1951,7 +1950,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   emptyVisual: {fileID: 172123433}
   filledVisual: {fileID: 1105506838}
-  playerNameText: {fileID: 0}
 --- !u!1 &1105506838
 GameObject:
   m_ObjectHideFlags: 0
@@ -2991,7 +2989,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   emptyVisual: {fileID: 930824309}
   filledVisual: {fileID: 1715760466}
-  playerNameText: {fileID: 0}
 --- !u!1 &1589335459
 GameObject:
   m_ObjectHideFlags: 0
@@ -3208,7 +3205,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1662990630}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 0}
+        m_TargetAssemblyTypeName: 
+        m_MethodName: 
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: 
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1662990630
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3342,7 +3351,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1695351041}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 0}
+        m_TargetAssemblyTypeName: 
+        m_MethodName: 
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: 
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1695351041
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3824,7 +3845,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   button: {fileID: 151137649}
   inputField: {fileID: 2074662695}
-  defaultStyle: adventurer
 --- !u!1 &1864644591
 GameObject:
   m_ObjectHideFlags: 0
@@ -3875,7 +3895,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   emptyVisual: {fileID: 262902173}
   filledVisual: {fileID: 1738927737}
-  playerNameText: {fileID: 0}
 --- !u!1 &2009156498
 GameObject:
   m_ObjectHideFlags: 0
