@@ -24,6 +24,7 @@ public class LobbyManager : MonoBehaviour
     bool isInLobby = true;
     ServerManager server_manager;
     PlayerManager player_manager;
+    MainGameManager main_game_manager;
     LobbyState lobby_state = LobbyState.NONE;
     
     private void Start()
@@ -34,6 +35,7 @@ public class LobbyManager : MonoBehaviour
     {
         server_manager = ServerManager.instance;
         player_manager = PlayerManager.instance;
+        main_game_manager = MainGameManager.instance;
     }
     public void Update()
     {
@@ -53,7 +55,7 @@ public class LobbyManager : MonoBehaviour
                 }
                 break;
             case LobbyState.SELECT:
-                if (player_manager.currentRoom != null)
+                if (main_game_manager.game_stat.roomInfo != null)
                 {
                     lobby_state = LobbyState.ROOM;
                 }
@@ -67,13 +69,11 @@ public class LobbyManager : MonoBehaviour
                 break;
         }
 
-        if (isInLobby && PlayerManager.instance.currentRoom != null)
+        if (isInLobby && main_game_manager.game_stat.roomInfo != null)
         {
-            if (PlayerManager.instance.currentRoom.started)
+            if (main_game_manager.game_stat.roomInfo.started)
             {
-                MainGameManager.instance.currentClientScene = ClientScene.IN_GAME;
-                ServerManager.instance.GameStart();
-                ServerManager.instance.RoomStop();
+                main_game_manager.currentClientScene = ClientScene.IN_GAME;
                 isInLobby = false;
             }
         }
@@ -134,7 +134,7 @@ public class LobbyManager : MonoBehaviour
             GameActionRequest request = new GameActionRequest()
             {
                 playerId = player_manager.this_player.id,
-                roomId = player_manager.currentRoom.roomId
+                roomId = main_game_manager.game_stat.roomInfo.roomId
             };
             server_manager.RoomRequest(request, ServerManager.RoomActionType.Start).Forget();
         }

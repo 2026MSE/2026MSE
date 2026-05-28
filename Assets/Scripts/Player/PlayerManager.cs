@@ -6,7 +6,10 @@ public class PlayerManager : MonoBehaviour
 {
     public static PlayerManager instance { get; private set; }
     public Player this_player { get; set; } = null;
+
+    // 로비에서만 사용
     public RoomInfo currentRoom { get; set; } = null;
+    // 로비에서만 사용
     public List<PlayerInfo> playerList { get; set; } = new List<PlayerInfo>();
 
     public List<Player> debug_players = new List<Player>();

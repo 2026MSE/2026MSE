@@ -14,18 +14,20 @@ public class PlayerLobby : MonoBehaviour
     private int lastPlayerListCount = 0;
 
     private PlayerManager player_manager;
+    private MainGameManager main_game_manager;
 
     private void OnEnable()
     {
         Debug.Log("PlayerLobby Start");
         player_manager = PlayerManager.instance;
+        main_game_manager = MainGameManager.instance;
     }
 
     private void Update()
     {
-        if (player_manager.currentRoom != null)
+        if (main_game_manager.game_stat.roomInfo != null)
         {
-            int currentRoomCount = player_manager.currentRoom.playerIds.Count;
+            int currentRoomCount = main_game_manager.game_stat.roomInfo.playerIds.Count;
             int currentListCount = player_manager.playerList != null ? player_manager.playerList.Count : 0;
 
             // 방의 ID 개수가 바뀌었거나, 폴링을 통해 실제 플레이어 정보 리스트 개수가 바뀌었을 때 UI 갱신

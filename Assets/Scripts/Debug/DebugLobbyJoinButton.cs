@@ -16,11 +16,11 @@ public class DebugLobbyJoinButton : MonoBehaviour
         {
             foreach (var debugPlayer in PlayerManager.instance.debug_players)
             {
-                if(PlayerManager.instance.currentRoom.playerIds.Contains(debugPlayer.id))
+                if(MainGameManager.instance.game_stat.roomInfo.playerIds.Contains(debugPlayer.id))
                 {
                     continue;
                 }
-                ServerManager.instance.RoomRequest(new GameActionRequest { playerId = debugPlayer.id, roomId = PlayerManager.instance.currentRoom.roomId } , ServerManager.RoomActionType.Join).Forget();
+                ServerManager.instance.RoomRequest(new GameActionRequest { playerId = debugPlayer.id, roomId = MainGameManager.instance.game_stat.roomInfo.roomId } , ServerManager.RoomActionType.Join).Forget();
             }
         };
     }
