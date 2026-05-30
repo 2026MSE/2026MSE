@@ -20,7 +20,7 @@ public class PlayerInstantiate : MonoBehaviour
         int i = 1;
         foreach(PlayerInfo player in main_game_manager.game_stat.players)
         {
-            if(player.playerId == MainGameManager.instance.turnInfo.currentTurnPlayerId)
+            if(player.playerId == main_game_manager.game_stat.turnInfo.currentTurnPlayerId)
             {
                 playerObjects.Add(Instantiate(playerPrefab, playerSpawnPoints[0].transform));
             }

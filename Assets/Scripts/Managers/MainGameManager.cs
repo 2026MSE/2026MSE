@@ -8,19 +8,16 @@ using UnityEngine.SceneManagement;
 public class MainGameManager : MonoBehaviour
 {
     public static MainGameManager instance { get; private set; }
-    public TurnInfo turnInfo { get; set; } = new TurnInfo();
-    public Scene? currentScene = Scene.NONE;
     public ClientScene currentClientScene = ClientScene.NONE;
     private ClientScene previousClientScene = ClientScene.NONE;
 
     public GameStateResponse game_stat = new GameStateResponse();
-
     public ThrowResponse throwResponse { get; set; } = new ThrowResponse();
-    public HallInfoResponse hallInfoResponse { get; set; } = new HallInfoResponse();
     public BoardStatusResponse boardStatusResponse { get; set; } = new BoardStatusResponse();
     public MoveListResponse moveListResponse { get; set; } = new MoveListResponse();
     private PlayerManager playerManager;
 
+    private TurnPhase now_pos_phase;
 
     public string gotoSceneName = "MainHall";
 
@@ -68,35 +65,39 @@ public class MainGameManager : MonoBehaviour
             }
         }
 
-        if (currentClientScene != ClientScene.IN_GAME)
+        
+        // 예외처리
+        if (currentClientScene != ClientScene.IN_GAME
+            || (!playerManager.isMyTurn() && game_stat.turnPhase == TurnPhase.PRIVATE_THROW)
+            || game_stat.turnPhase == now_pos_phase)
             return;
-        // 현재 턴 플레이어가 아니면서 private room에 있는 경우 Main Hall로 이동
-        if (!playerManager.isMyTurn() && turnInfo.currentTurnPlayerRoom == Scene.PRIVATE_ROOM)
-        {
-            turnInfo.currentTurnPlayerRoom = Scene.MAIN_HALL;
-        }
-        if (currentScene != turnInfo.currentTurnPlayerRoom)
-        {
-            
 
-            currentScene = turnInfo.currentTurnPlayerRoom;
-            switch (currentScene)
-            {
-                case Scene.MAIN_HALL:
-                    MainHall();
-                    break;
-                case Scene.PRIVATE_ROOM:
-                    PrivateRoom();
-                    break;
-                case Scene.YUT_ROOM:
-                    YutRoom();
-                    break;
-                case Scene.CHALLENGE_ROOM:
-                    ChallengeRoom();
-                    break;
-                default:
-                    break;
-            }
+
+        now_pos_phase = game_stat.turnPhase;
+        switch (now_pos_phase)
+        {
+            case TurnPhase.PRIVATE_THROW:
+                PrivateRoom();
+                break;
+            case TurnPhase.MAIN_HALL_DECLARE:
+                MainHall();
+                break;
+            case TurnPhase.MAIN_HALL_CHALLENGE:
+            case TurnPhase.CHALLENGE_RESULT:
+                ChallengeRoom();
+                break;
+            case TurnPhase.CATCH_BONUS_THROW:
+            case TurnPhase.YUT_MOVE:
+            case TurnPhase.YUT_MOVE_DONE:
+                YutRoom();
+                break;
+            case TurnPhase.TURN_END:
+                break;
+            case TurnPhase.GAME_OVER:
+                Exit();
+                break;
+            default:
+                break;
         }
 
         

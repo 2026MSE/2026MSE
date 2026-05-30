@@ -93,9 +93,9 @@ public class ServerManager : MonoBehaviour
 
             if (is_debugging)
             {
-                if (!playerManager.isMyTurn()) 
+                if (!playerManager.isMyTurn())
                 { 
-                    playerManager.this_player.id = main_game_manager.turnInfo.currentTurnPlayerId;
+                    playerManager.this_player.id = main_game_manager.game_stat.turnInfo.currentTurnPlayerId;
                 }
             }
 
@@ -230,14 +230,16 @@ public class ServerManager : MonoBehaviour
         Debug.Log($"MoveListRequest {response.message} : {response.data}");
         main_game_manager.moveListResponse = response.data;
     }
+
+    // HallController /hall
+
+    // /declare
     public async UniTaskVoid DeclareRequest(StickSide[] declareSticks)
     {
         string result = await SendJsonToServer(serverUrl + "/hall/declare", JsonUtility.ToJson(new DeclareRequest { 
             playerId = playerManager.this_player.id, roomId = main_game_manager.game_stat.roomInfo.roomId, s1 = declareSticks[0], s2 = declareSticks[1] }));
-        
-        ApiResponse<DeclareResponse> response = JsonConvert.DeserializeObject<ApiResponse<DeclareResponse>>(result);
-        Debug.Log($"DeclareRequest {response.message} : {response.data}");
     }
+
 
     // PlayerController /api/avatar
 

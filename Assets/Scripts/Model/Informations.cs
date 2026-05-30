@@ -3,21 +3,12 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public enum ChanceCards
+public enum ChanceCard
 {
-    
-}
-
-public enum Scene
-{
-    NONE,
-    TITLE,
-    OPTION,
-    EXIT,
-    MAIN_HALL,
-    PRIVATE_ROOM,
-    YUT_ROOM,
-    CHALLENGE_ROOM
+    EXTRA_THROW,
+    MOVE_PLUS_ONE,
+    SHIELD,
+    FORCE_BACK
 }
 
 public enum ClientScene
@@ -47,27 +38,10 @@ public class TurnInfo
 {
 
     public string currentTurnPlayerId;
-    public Scene? currentTurnPlayerRoom = Scene.MAIN_HALL;
 
     public List<string> turnOrder;
     public int currentTurnIndex;
 
-}
-[System.Serializable]
-public class Player
-{
-    public string name;
-    public string profileUrl;
-    public string id;
-
-}
-[System.Serializable]
-public enum HallState
-{
-    DECLARE,
-    IDLE1,
-    CHALLENGE,
-    IDLE2,
 }
 [System.Serializable]
 public class ApiResponse<T>
@@ -127,23 +101,6 @@ public class ThrowResponse
 }
 
 [System.Serializable]
-public class BoardStatusResponse
-{
-    public Dictionary<string, List<Piece>> allPieces;
-
-    public bool extraTurn;
-    public ThrowResponse throwResult;
-
-    public string currentTurnPlayerId;
-    public Scene currentRoom;
-
-    public bool alreadyThrown;
-    public bool alreadyMoved;
-
-    public HallState hallState;
-}
-
-[System.Serializable]
 public class MoveRequest
 {
     public string roomId;
@@ -151,39 +108,6 @@ public class MoveRequest
     public string pieceId;
 }
 
-[System.Serializable]
-public class MoveListResponse
-{
-    public List<MoveOption> movablePieces;
-}
-[System.Serializable]
-public class Piece
-{
-    public string id;
-    public string ownerId;
-    public int currentPosition;
-
-    public List<Piece> carriedPieces;
-}
-[System.Serializable]
-public class MoveOption
-{
-    public string pieceId;
-    public int currentPosition;
-    public int targetPosition;
-    public bool finished;
-}
-[System.Serializable]
-public class HallInfoResponse
-{
-    public HallState state;
-
-    public StickSide?[] publicSticks;
-    public StickSide?[] declaredPrivateSticks;
-
-    public string firstChallenger;
-    public List<string> queue;
-}
 [System.Serializable]
 public enum StickSide
 {
@@ -194,32 +118,25 @@ public enum StickSide
 [System.Serializable]
 public class DeclareRequest
 {
-
     public string roomId;
     public string playerId;
 
     public StickSide s1;
     public StickSide s2;
 }
+
+
+// 새로운 DTO
+
 [System.Serializable]
-public class DeclareResponse
+public class BoardStatusResponse
 {
-    public string message;
-
-    public StickSide?[] declaredPrivateSticks;
-    public StickSide?[] publicSticks;
-
-    public HallState state;
+    public Dictionary<string, List<PieceInfo>> allPieces;
 }
 
-/*
- * 새로운 DTO
- */
-
-
+[System.Serializable]
 public class GameStateResponse
 {
-
     public List<GameLog> logs;
 
     public RoomInfo roomInfo;
@@ -247,6 +164,7 @@ public class GameStateResponse
     public List<PlayerEffectInfo> activeEffects;
 }
 
+[System.Serializable]
 public class GameLog
 {
 
@@ -257,33 +175,31 @@ public class GameLog
 public enum TurnPhase
 {
 
-    WAITING, // 방 대기 중
+    WAITING,
 
-    PRIVATE_THROW, // 턴 플레이어가 Private Room에서 윷 던지는 단계
+    PRIVATE_THROW,
 
-    MAIN_HALL_DECLARE, // Main Hall에서 결과를 선언하는 단계
-    MAIN_HALL_CHALLENGE, // 다른 플레이어들이 챌린지할 수 있는 단계
+    MAIN_HALL_DECLARE,
+    MAIN_HALL_CHALLENGE,
 
-    CHALLENGE_RESULT, // 챌린지 결과 공개 및 처리 단계
+    CHALLENGE_RESULT,
 
     CATCH_BONUS_THROW,
 
-    YUT_MOVE, // 윷판에서 말을 이동하는 단계
-    YUT_MOVE_DONE, // 말을 이동한 후 추가 행동이 필요한지 판단하는 단계
+    YUT_MOVE,
+    YUT_MOVE_DONE,
 
-    TURN_END, // 턴 종료 처리 단계
+    TURN_END,
 
-    GAME_OVER // 게임 종료
-
+    GAME_OVER
 }
-
-
-// 챌린지 결과 enum
 public enum JudgeResult
 {
     CHALLENGE_SUCCESS,
     CHALLENGE_FAIL
 }
+
+[System.Serializable]
 public class JudgeResponse
 {
 
@@ -312,6 +228,7 @@ public class JudgeResponse
     public string penaltyPieceId;
 }
 
+[System.Serializable]
 public class PlayerEffectInfo
 {
 
@@ -337,4 +254,59 @@ public enum EffectType
     // 제한 계열
     NO_CHALLENGE,        // 다음 턴 챌린지 불가
     NO_CHANCE_CARD       // 다음 보상 획득 불가
+}
+
+[System.Serializable]
+public class PieceInfo
+{
+    public string pieceId;
+    public string ownerId;
+    public int currentPosition;
+    public string carriedByPieceId;
+    public List<string> carriedPieceIds;
+}
+
+[System.Serializable]
+public class MoveGroup
+{
+    public int yutResultIndex;
+    public YutName yutName;
+    public int move;
+    public List<MoveOption> movablePieces;
+}
+
+[System.Serializable]
+public class MoveListResponse
+{
+    public List<MoveGroup> moveGroups; // 변경됨
+}
+
+public enum MoveType
+{
+    NORMAL,    // 일반 이동 (빈 칸으로 이동)
+    PIGGYBACK, // 업기 (내 말이 있는 칸으로 이동하여 합쳐짐)
+    CATCH,     // 잡기 (상대방 말이 있는 칸으로 이동하여 상대 말을 대기석으로 보냄)
+    FINISH     // 완주 (골인 지점을 통과함)
+}
+
+[System.Serializable]
+public class MoveOption
+{
+    public string pieceId;
+    public int currentPosition;
+    public int targetPosition;
+    public bool finished;
+
+    public MoveType moveType;
+}
+
+[System.Serializable]
+public class Player
+{
+
+    public string name;
+    public string profileUrl;
+    public string id;
+
+    public List<ChanceCard> inventory;
 }

@@ -11,7 +11,7 @@ public class PlayerManager : MonoBehaviour
 
     public bool isMyTurn()
     {
-        if (MainGameManager.instance.turnInfo.currentTurnPlayerId == this_player.id)
+        if (MainGameManager.instance.game_stat.turnInfo.currentTurnPlayerId == this_player.id)
         {
             return true;
         }
