@@ -77,9 +77,7 @@ public class ServerManager : MonoBehaviour
         }
     }
 
-    /*
-     * GameController /game
-     */
+    // GameController /game
 
     // /state
     private async UniTaskVoid PollServer(CancellationToken token)
@@ -122,16 +120,14 @@ public class ServerManager : MonoBehaviour
             RoomInfo roomInfo1 = roomResponse.data;
             List<PlayerInfo> playerInfos = playerResponse.data;
 
-            playerManager.playerList = playerInfos;
+            main_game_manager.game_stat.players = playerInfos;
             main_game_manager.game_stat.roomInfo = roomInfo1;
 
             await UniTask.Delay((int)(pollInterval * 1000), cancellationToken: token);
         }
     }
     
-    /*
-     * RoomController /room
-     */
+    // RoomController /room
 
     public enum RoomActionType
     {
@@ -243,9 +239,7 @@ public class ServerManager : MonoBehaviour
         Debug.Log($"DeclareRequest {response.message} : {response.data}");
     }
 
-    /*
-     * PlayerController /api/avatar
-     */
+    // PlayerController /api/avatar
 
     // /player
     public async UniTaskVoid PlayerRequest(string name, string style)
@@ -274,10 +268,9 @@ public class ServerManager : MonoBehaviour
         return;
     }
 
-    /*
-     * 이 아래로는 서버와 직접 통신하는 함수들
-     * 더이상 건드리지 않아도 됨.
-     */
+
+    // 이 아래로는 서버와 직접 통신하는 함수들
+    // 더이상 건드리지 않아도 됨.
 
 
     // 직접 서버에서 데이터를 받아오는 역할

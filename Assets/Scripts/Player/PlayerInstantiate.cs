@@ -10,13 +10,15 @@ public class PlayerInstantiate : MonoBehaviour
     public List<GameObject> playerObjects { get; set; } = new List<GameObject>();
     public GameObject playerPrefab;
     public List<GameObject> playerSpawnPoints;
+    MainGameManager main_game_manager;
 
     void Start()
     {
         playerManager = PlayerManager.instance;
+        main_game_manager = MainGameManager.instance;
 
         int i = 1;
-        foreach(PlayerInfo player in playerManager.playerList)
+        foreach(PlayerInfo player in main_game_manager.game_stat.players)
         {
             if(player.playerId == MainGameManager.instance.turnInfo.currentTurnPlayerId)
             {

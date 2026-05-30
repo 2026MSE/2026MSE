@@ -13,7 +13,7 @@ public class MainGameManager : MonoBehaviour
     public ClientScene currentClientScene = ClientScene.NONE;
     private ClientScene previousClientScene = ClientScene.NONE;
 
-    public GameStateResponse game_stat;
+    public GameStateResponse game_stat = new GameStateResponse();
 
     public ThrowResponse throwResponse { get; set; } = new ThrowResponse();
     public HallInfoResponse hallInfoResponse { get; set; } = new HallInfoResponse();
