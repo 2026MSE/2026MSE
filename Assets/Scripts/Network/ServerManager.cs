@@ -88,9 +88,10 @@ public class ServerManager : MonoBehaviour
 
             ApiResponse<GameStateResponse> game_state_response = JsonConvert.DeserializeObject<ApiResponse<GameStateResponse>>(game_state);
 
+            Debug.Log(game_state_response.data.roomInfo.playerIds);
+
             main_game_manager.game_stat = game_state_response.data;
             
-
             if (is_debugging)
             {
                 if (!playerManager.isMyTurn())

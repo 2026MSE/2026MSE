@@ -11,6 +11,7 @@ public class MainHallManager : MonoBehaviour
 
 
     PlayerManager playerManager;
+    MainGameManager main_game_manager;
     public TextMeshProUGUI[] declareTexts = new TextMeshProUGUI[2];
 
     StickSide[] declareSticks = new StickSide[2];
@@ -18,6 +19,7 @@ public class MainHallManager : MonoBehaviour
     private void Start()
     {
         playerManager = PlayerManager.instance;
+        main_game_manager = MainGameManager.instance;
     }
 
     private void Update()
@@ -26,12 +28,12 @@ public class MainHallManager : MonoBehaviour
         {
             UpdateUI();
         }
-        switch (MainGameManager.instance.boardStatusResponse.hallState)
+        switch (main_game_manager.game_stat.turnPhase)
         {
-            case HallState.DECLARE:
+            case TurnPhase.MAIN_HALL_DECLARE:
                 CheckTurn();
                 break;
-            case HallState.CHALLENGE:
+            case TurnPhase.MAIN_HALL_CHALLENGE:
                 // fix after challenge system is implemented
                 break;
         }

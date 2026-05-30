@@ -35,9 +35,13 @@ public class PrivateRoom_GameManager : MonoBehaviour
     [SerializeField]
     PrivateRoomState state;
 
+    ServerManager server_manager;
+    MainGameManager main_game_manager;
     void Start()
     {
         state = PrivateRoomState.Init;
+        server_manager = ServerManager.instance;
+        main_game_manager = MainGameManager.instance;
     }
 
     void Update()
@@ -132,16 +136,16 @@ public class PrivateRoom_GameManager : MonoBehaviour
          * 씬 전환
          */
 
-        if (ServerManager.instance.isUsingServer)
-            ServerManager.instance.PrivateExitRequest().Forget();
+        if (server_manager.isUsingServer)
+            server_manager.PrivateExitRequest().Forget();
         else
-            MainGameManager.instance.turnInfo = new TurnInfo { currentTurnPlayerRoom = Scene.MAIN_HALL }; // 테스트용 더미 데이터
+            main_game_manager.game_stat.turnPhase = TurnPhase.MAIN_HALL_DECLARE; // 테스트용 더미 데이터
         state = PrivateRoomState.None;
     }
     public async UniTaskVoid GetYutResult()
     {
-        if (ServerManager.instance.isUsingServer)
-            ServerManager.instance.YutRequest().Forget();
+        if (server_manager.isUsingServer)
+            server_manager.YutRequest().Forget();
         else
             yutResult = new StickSide[] { StickSide.HEAD, StickSide.TAIL, StickSide.HEAD, StickSide.TAIL }; // 테스트용 더미 데이터
 
@@ -163,7 +167,7 @@ public class PrivateRoom_GameManager : MonoBehaviour
     {
         await UniTask.Delay(2000); // 테스트용 딜레이
 
-        await UniTask.WaitUntil(() => MainGameManager.instance.throwResponse != null);
+        await UniTask.WaitUntil(() => main_game_manager.throwResponse != null);
         PrivateRoom_UIManager.instance.ShowYut();
         state = PrivateRoomState.Idle2;
     }

@@ -55,7 +55,7 @@ public class LobbyManager : MonoBehaviour
                 }
                 break;
             case LobbyState.SELECT:
-                if (main_game_manager.game_stat.roomInfo != null)
+                if (main_game_manager.game_stat.roomInfo.playerIds.Count > 0)
                 {
                     lobby_state = LobbyState.ROOM;
                 }

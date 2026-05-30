@@ -17,10 +17,22 @@ public class PlayerInstantiate : MonoBehaviour
         playerManager = PlayerManager.instance;
         main_game_manager = MainGameManager.instance;
 
-        int i = 1;
-        foreach(PlayerInfo player in main_game_manager.game_stat.players)
+        if(main_game_manager.game_stat.turnInfo.currentTurnPlayerId != null)
         {
-            if(player.playerId == main_game_manager.game_stat.turnInfo.currentTurnPlayerId)
+            Instantiate();
+        }
+        else
+        {
+            Debug.LogError("Null : game_stat.turnInfo.currentTurnPlayerId == null");
+        }
+    }
+
+    private void Instantiate()
+    {
+        int i = 1;
+        foreach (PlayerInfo player in main_game_manager.game_stat.players)
+        {
+            if (player.playerId == main_game_manager.game_stat.turnInfo.currentTurnPlayerId)
             {
                 playerObjects.Add(Instantiate(playerPrefab, playerSpawnPoints[0].transform));
             }
@@ -28,13 +40,12 @@ public class PlayerInstantiate : MonoBehaviour
             {
                 playerObjects.Add(Instantiate(playerPrefab, playerSpawnPoints[i++].transform));
             }
-            if(player.playerId == playerManager.this_player.id)
+            if (player.playerId == playerManager.this_player.id)
             {
                 playerObjects[playerObjects.Count - 1].GetComponent<PlayerController>().is_local_player = true;
             }
         }
     }
-
     
     void Update()
     {

@@ -18,7 +18,6 @@ public class PlayerLobby : MonoBehaviour
 
     private void OnEnable()
     {
-        Debug.Log("PlayerLobby Start");
         player_manager = PlayerManager.instance;
         main_game_manager = MainGameManager.instance;
     }
@@ -44,8 +43,6 @@ public class PlayerLobby : MonoBehaviour
 
     private void UpdateRoomUI()
     {
-        Debug.Log("UpdateRoomUI");
-
         for (int i = 0; i < playerSlots.Length; i++)
         {
             if (i < main_game_manager.game_stat.roomInfo.playerIds.Count &&
