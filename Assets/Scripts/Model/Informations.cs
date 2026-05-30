@@ -82,11 +82,9 @@ public enum YutName
 [System.Serializable]
 public class YutResult
 {
-
     public YutName result;
     public int move;
     public bool extraTurn;
-
 }
 
 [System.Serializable]
@@ -100,13 +98,7 @@ public class ThrowResponse
     public YutResult yutResult;
 }
 
-[System.Serializable]
-public class MoveRequest
-{
-    public string roomId;
-    public string playerId;
-    public string pieceId;
-}
+
 
 [System.Serializable]
 public enum StickSide
@@ -309,4 +301,14 @@ public class Player
     public string id;
 
     public List<ChanceCard> inventory;
+}
+
+[System.Serializable]
+public class MoveRequest
+{
+    public string roomId;
+    public string playerId;
+    public string pieceId;
+
+    public int yutResultIndex;
 }

@@ -13,7 +13,6 @@ public class MainGameManager : MonoBehaviour
 
     public GameStateResponse game_stat = new GameStateResponse();
     public ThrowResponse throwResponse { get; set; } = new ThrowResponse();
-    public BoardStatusResponse boardStatusResponse { get; set; } = new BoardStatusResponse();
     public MoveListResponse moveListResponse { get; set; } = new MoveListResponse();
     private PlayerManager playerManager;
 
