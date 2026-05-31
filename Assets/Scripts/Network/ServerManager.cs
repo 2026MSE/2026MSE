@@ -200,9 +200,9 @@ public class ServerManager : MonoBehaviour
 
         main_game_manager.throwResponse = response.data;
     }
-    public async UniTask MovePieceRequest(string pieceId)
+    public async UniTask MovePieceRequest(string pieceId, int result_index)
     {
-        await SendJsonToServer(serverUrl + "/board/move", JsonUtility.ToJson(new MoveRequest { playerId = playerManager.this_player.id, roomId = main_game_manager.game_stat.roomInfo.roomId, pieceId = pieceId }));
+        await SendJsonToServer(serverUrl + "/board/move", JsonUtility.ToJson(new MoveRequest { playerId = playerManager.this_player.id, roomId = main_game_manager.game_stat.roomInfo.roomId, pieceId = pieceId, yutResultIndex = result_index }));
     }
 
     public async UniTask ThrowYutRequest()
@@ -219,7 +219,6 @@ public class ServerManager : MonoBehaviour
     {
         string result = await FetchDataFromServer(serverUrl + "/board/moveList?roomId=" + main_game_manager.game_stat.roomInfo.roomId + "&playerId=" + playerManager.this_player.id);
         ApiResponse<MoveListResponse> response = JsonConvert.DeserializeObject<ApiResponse<MoveListResponse>>(result);
-        Debug.Log($"MoveListRequest {response.message} : {response.data}");
         main_game_manager.moveListResponse = response.data;
     }
 

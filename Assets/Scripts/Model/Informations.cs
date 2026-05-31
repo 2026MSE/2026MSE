@@ -170,6 +170,7 @@ public enum TurnPhase
     WAITING,
 
     PRIVATE_THROW,
+    PRIVATE_THROW_RESULT,
 
     MAIN_HALL_DECLARE,
     MAIN_HALL_CHALLENGE,
@@ -177,6 +178,7 @@ public enum TurnPhase
     CHALLENGE_RESULT,
 
     CATCH_BONUS_THROW,
+    CATCH_BONUS_THROW_RESULT,
 
     YUT_MOVE,
     YUT_MOVE_DONE,
@@ -184,6 +186,7 @@ public enum TurnPhase
     TURN_END,
 
     GAME_OVER
+
 }
 public enum JudgeResult
 {

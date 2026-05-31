@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Cysharp.Threading.Tasks;
+using UnityEngine.SceneManagement;
 
 public enum PrivateRoomState
 {
@@ -13,8 +14,6 @@ public enum PrivateRoomState
     Chance_select,
     Exit
 }
-
-
 
 public class PrivateRoom_GameManager : MonoBehaviour
 {
@@ -136,10 +135,10 @@ public class PrivateRoom_GameManager : MonoBehaviour
          * 씬 전환
          */
 
-        if (server_manager.isUsingServer)
+        if (server_manager != null)
             server_manager.PrivateExitRequest().Forget();
         else
-            main_game_manager.game_stat.turnPhase = TurnPhase.MAIN_HALL_DECLARE; // 테스트용 더미 데이터
+            SceneManager.UnloadSceneAsync("PrivateRoom"); // 테스트용 데이터
         state = PrivateRoomState.None;
     }
     public async UniTaskVoid GetYutResult()
@@ -147,7 +146,7 @@ public class PrivateRoom_GameManager : MonoBehaviour
         if (server_manager.isUsingServer)
             server_manager.YutRequest().Forget();
         else
-            yutResult = new StickSide[] { StickSide.HEAD, StickSide.TAIL, StickSide.HEAD, StickSide.TAIL }; // 테스트용 더미 데이터
+            yutResult = new StickSide[] { StickSide.HEAD, StickSide.TAIL, StickSide.HEAD, StickSide.TAIL }; // 테스트용 데이터
 
         await YutAnimation();
     }

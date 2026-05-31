@@ -34,6 +34,8 @@ public class YutManager : MonoBehaviour
     private ServerManager server_manager;
     private PlayerManager player_manager;
 
+    private bool is_selecting = false;
+
     private void Awake()
     {
         if (Instance == null) Instance = this;
@@ -48,6 +50,7 @@ public class YutManager : MonoBehaviour
 
         throwButton.gameObject.SetActive(false);
         throwButton.onClick.AddListener(OnThrowButtonClicked);
+        is_selecting = false;
         if (player_manager.isMyTurn())
         {
             MyTurnStart();
@@ -100,8 +103,7 @@ public class YutManager : MonoBehaviour
     private void CheckMovablePieces()
     {
         List<PieceInfo> movablePieces = new List<PieceInfo>();
-
-
+        
 
         foreach (var moveOption in movablePieces)
         {
@@ -114,10 +116,12 @@ public class YutManager : MonoBehaviour
 
     public async void OnPieceSelected(string pieceId)
     {
+        is_selecting = true;
+
         foreach (var piece in allPiecesDict.Values)
             piece.SetClickable(false);
 
-        await ServerManager.instance.MovePieceRequest(pieceId);
+        await ServerManager.instance.MovePieceRequest(pieceId, target_move);
 
         // ServerManager의 폴링 대기
         await Task.Delay(1000);

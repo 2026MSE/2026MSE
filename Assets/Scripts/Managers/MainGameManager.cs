@@ -14,8 +14,8 @@ public class MainGameManager : MonoBehaviour
     public GameStateResponse game_stat = new GameStateResponse();
     public ThrowResponse throwResponse { get; set; } = new ThrowResponse();
     public MoveListResponse moveListResponse { get; set; } = new MoveListResponse();
-    private PlayerManager playerManager;
 
+    private PlayerManager playerManager;
     private TurnPhase now_pos_phase;
 
     public string gotoSceneName = "MainHall";
@@ -129,18 +129,18 @@ public class MainGameManager : MonoBehaviour
     }
     void RoomCreate()
     {
-        SceneManager.LoadScene("RoomCreate", LoadSceneMode.Additive);
+        gotoSceneName = "RoomCreate";
+        LoadingScene(true);
     }
     void MainHall()
     {
-        throwResponse = null;
         gotoSceneName = "MainHall";
         LoadingScene();
     }
     void PrivateRoom()
     {
         gotoSceneName = "PrivateRoom";
-        LoadingScene();
+        LoadingScene(true);
     }
     void YutRoom()
     {
