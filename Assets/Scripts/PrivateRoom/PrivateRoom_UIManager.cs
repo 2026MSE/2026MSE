@@ -1,8 +1,6 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using Cysharp.Threading.Tasks;
 using TMPro;
 
 public class PrivateRoom_UIManager : MonoBehaviour
@@ -54,7 +52,7 @@ public class PrivateRoom_UIManager : MonoBehaviour
     public void EnterIdle2()
     {
         throwButton.gameObject.SetActive(false);
-        chanceSelectButton.gameObject.SetActive(true);
+        //chanceSelectButton.gameObject.SetActive(true);
         exitButton.gameObject.SetActive(true);
     }
 
@@ -89,9 +87,30 @@ public class PrivateRoom_UIManager : MonoBehaviour
 
         for (int i = 0; i < 4; i++)
         {
-            yut_objects[i].GetComponent<YutState>().stickSide = MainGameManager.instance.throwResponse.sticks[i];
+            //yut_objects[i].GetComponent<YutState>().stickSide = MainGameManager.instance.throwResponse.sticks[i];
+            if(MainGameManager.instance.throwResponse.sticks[i] == StickSide.HEAD)
+            {
+                var tmp_animator = yut_objects[i].GetComponent<Animator>();
+                tmp_animator.SetBool("is_up", true);
+                tmp_animator.SetTrigger("throw");
+            }
+            else if (MainGameManager.instance.throwResponse.sticks[i] == StickSide.TAIL)
+            {
+                var tmp_animator = yut_objects[i].GetComponent<Animator>();
+                tmp_animator.SetBool("is_up", false);
+                tmp_animator.SetBool("is_backdo", false);
+                tmp_animator.SetTrigger("throw");
+            }
+            else if (MainGameManager.instance.throwResponse.sticks[i] == StickSide.BACK)
+            {
+                var tmp_animator = yut_objects[i].GetComponent<Animator>();
+                tmp_animator.SetBool("is_up", false);
+                tmp_animator.SetBool("is_backdo", true);
+                tmp_animator.SetTrigger("throw");
+            }
         }
         yutResultText.gameObject.SetActive(true);
         yutResultText.text = MainGameManager.instance.throwResponse.yutResult.result.ToString();
     }
+
 }

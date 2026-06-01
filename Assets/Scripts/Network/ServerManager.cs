@@ -191,11 +191,9 @@ public class ServerManager : MonoBehaviour
 
     public async UniTaskVoid YutRequest()
     {
-        await SendJsonToServer(serverUrl + "/turn/throw", JsonUtility.ToJson(new GameActionRequest { playerId = playerManager.this_player.id, roomId = main_game_manager.game_stat.roomInfo.roomId }));
-        string result = await FetchDataFromServer(serverUrl + "/private/info?roomId=" + main_game_manager.game_stat.roomInfo.roomId + "&playerId=" + playerManager.this_player.id);
-
+        string result = await SendJsonToServer(serverUrl + "/turn/throw", JsonUtility.ToJson(new GameActionRequest { playerId = playerManager.this_player.id, roomId = main_game_manager.game_stat.roomInfo.roomId }));
+        
         ApiResponse<ThrowResponse> response = JsonConvert.DeserializeObject<ApiResponse<ThrowResponse>>(result);
-        Debug.Log($"YutRequest {response.message} : {response.data.sticks}");
 
         main_game_manager.throwResponse = response.data;
     }
