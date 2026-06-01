@@ -83,7 +83,7 @@ public class PrivateRoom_UIManager : MonoBehaviour
 
     public void ShowYut()
     {
-        yut_positions.ForEach(pos => yut_objects.Add(Instantiate(yut_prefab, pos.transform.position, Quaternion.identity)));
+        yut_positions.ForEach(pos => yut_objects.Add(Instantiate(yut_prefab, pos.transform)));
 
         for (int i = 0; i < 4; i++)
         {

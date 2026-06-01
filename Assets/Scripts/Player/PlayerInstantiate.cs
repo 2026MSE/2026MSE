@@ -12,19 +12,13 @@ public class PlayerInstantiate : MonoBehaviour
     public List<GameObject> playerSpawnPoints;
     MainGameManager main_game_manager;
 
-    void Start()
+    IEnumerator Start()
     {
         playerManager = PlayerManager.instance;
         main_game_manager = MainGameManager.instance;
 
-        if(main_game_manager.game_stat.turnInfo.currentTurnPlayerId != null)
-        {
-            Instantiate();
-        }
-        else
-        {
-            Debug.LogError("Null : game_stat.turnInfo.currentTurnPlayerId == null");
-        }
+        yield return new WaitUntil(() => main_game_manager.game_stat.turnInfo.currentTurnPlayerId != null);
+        Instantiate();
     }
 
     private void Instantiate()

@@ -136,10 +136,10 @@ public class PrivateRoom_GameManager : MonoBehaviour
          */
 
         if (server_manager != null)
+        {
             server_manager.PrivateExitRequest().Forget();
-        else
-            SceneManager.UnloadSceneAsync("PrivateRoom"); // 테스트용 데이터
-        state = PrivateRoomState.None;
+            SceneManager.UnloadSceneAsync("PrivateRoom");
+        }
     }
     public async UniTaskVoid GetYutResult()
     {

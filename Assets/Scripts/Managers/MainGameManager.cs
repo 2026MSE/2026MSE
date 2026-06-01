@@ -42,7 +42,12 @@ public class MainGameManager : MonoBehaviour
 
     void Update()
     {
-        if(previousClientScene != currentClientScene)
+        if (SceneManager.GetSceneByName("LoadingScene").IsValid())
+        {
+            return;
+        }
+
+        if (previousClientScene != currentClientScene)
         {
             previousClientScene = currentClientScene;
             switch (currentClientScene)
@@ -112,6 +117,11 @@ public class MainGameManager : MonoBehaviour
 
     public void LoadingScene(bool is_additive = false)
     {
+        if(SceneManager.GetSceneByName(gotoSceneName).IsValid())
+        {
+            return;
+        }
+
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
         if (is_additive)

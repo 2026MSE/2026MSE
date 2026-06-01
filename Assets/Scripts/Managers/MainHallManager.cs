@@ -31,7 +31,7 @@ public class MainHallManager : MonoBehaviour
         switch (main_game_manager.game_stat.turnPhase)
         {
             case TurnPhase.MAIN_HALL_DECLARE:
-                CheckTurn();
+                CheckDeclareTurn();
                 break;
             case TurnPhase.MAIN_HALL_CHALLENGE:
                 // fix after challenge system is implemented
@@ -39,7 +39,7 @@ public class MainHallManager : MonoBehaviour
         }
     }
 
-    void CheckTurn()
+    void CheckDeclareTurn()
     {
         if (playerManager.isMyTurn())
         {
