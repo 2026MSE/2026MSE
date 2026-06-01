@@ -74,6 +74,7 @@ public class LobbyManager : MonoBehaviour
             if (main_game_manager.game_stat.roomInfo.started)
             {
                 main_game_manager.currentClientScene = ClientScene.IN_GAME;
+                main_game_manager.MainHall();
                 isInLobby = false;
             }
         }

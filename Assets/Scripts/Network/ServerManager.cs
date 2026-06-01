@@ -88,7 +88,7 @@ public class ServerManager : MonoBehaviour
 
             ApiResponse<GameStateResponse> game_state_response = JsonConvert.DeserializeObject<ApiResponse<GameStateResponse>>(game_state);
 
-            Debug.Log(game_state_response.data.roomInfo.playerIds);
+            //Debug.Log(game_state_response.data.roomInfo.playerIds);
 
             main_game_manager.game_stat = game_state_response.data;
             
@@ -178,7 +178,6 @@ public class ServerManager : MonoBehaviour
             }
         }
     }
-
 
     // ¾È¾¸
     public async UniTaskVoid TextureRequest()

@@ -35,7 +35,7 @@ public class MainGameManager : MonoBehaviour
     void Start()
     {
         playerManager = PlayerManager.instance;
-        SceneManager.LoadScene("MainGameUI", LoadSceneMode.Additive);
+        //SceneManager.LoadScene("MainGameUI", LoadSceneMode.Additive);
         //µð¹ö±ë¿ë
         //ServerManager.instance.TextureRequest().Forget();
     }
@@ -58,9 +58,11 @@ public class MainGameManager : MonoBehaviour
                     return;
                 case ClientScene.ROOM_CREATE:
                     RoomCreate();
-                    break;
+                    return;
                 case ClientScene.IN_GAME:
                     break;
+                default:
+                    return;
             }
         }
 
@@ -113,7 +115,7 @@ public class MainGameManager : MonoBehaviour
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
         if (is_additive)
-            SceneManager.LoadScene("LoadingScene", LoadSceneMode.Additive);
+            SceneManager.LoadScene(gotoSceneName, LoadSceneMode.Additive);
         else
             SceneManager.LoadScene("LoadingScene");
     }
@@ -125,14 +127,14 @@ public class MainGameManager : MonoBehaviour
     void Option()
     {
         gotoSceneName = "Option";
-        LoadingScene();
+        LoadingScene(true);
     }
     void RoomCreate()
     {
         gotoSceneName = "RoomCreate";
         LoadingScene(true);
     }
-    void MainHall()
+    public void MainHall()
     {
         gotoSceneName = "MainHall";
         LoadingScene();

@@ -85,6 +85,9 @@ public class YutResult
     public YutName result;
     public int move;
     public bool extraTurn;
+
+    public string source;
+    public string sourceCard;
 }
 
 [System.Serializable]
@@ -268,6 +271,9 @@ public class MoveGroup
     public YutName yutName;
     public int move;
     public List<MoveOption> movablePieces;
+    public string source;
+    public string sourceCard;
+
 }
 
 [System.Serializable]

@@ -44,6 +44,7 @@ public class PlayerInstantiate : MonoBehaviour
             {
                 playerObjects[playerObjects.Count - 1].GetComponent<PlayerController>().is_local_player = true;
             }
+            playerObjects[playerObjects.Count - 1].name = player.name;
         }
     }
     

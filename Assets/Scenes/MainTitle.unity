@@ -151,7 +151,54 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 414b48b93a5650342aa28d17d4fe42bf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  currentClientScene: 0
+  currentClientScene: 1
+  game_stat:
+    logs: []
+    roomInfo:
+      roomId: 
+      playerIds: []
+      hostId: 
+      started: 0
+    turnInfo:
+      currentTurnPlayerId: 
+      turnOrder: []
+      currentTurnIndex: 0
+    turnPhase: 0
+    players: []
+    privateSticks: 
+    publicSticks: 
+    declaredPrivateSticks: 
+    firstChallenger: 
+    challengeQueue: []
+    currentYutResult:
+      result: 0
+      move: 0
+      extraTurn: 0
+      source: 
+      sourceCard: 
+    pendingYutResults: []
+    lastJudgeResponse:
+      judgeResult: 0
+      challengerId: 
+      turnPlayerId: 
+      actualPrivateSticks: 
+      declaredPrivateSticks: 
+      publicSticks: 
+      actualResult:
+        result: 0
+        move: 0
+        extraTurn: 0
+        source: 
+        sourceCard: 
+      rewardChanceCard: 0
+      rewardCard: 
+      penaltyType: 
+      penaltyApplied: 0
+      penaltyPieceId: 
+    challengeDeadlineMillis: 0
+    serverTimeMillis: 0
+    winnerId: 
+    activeEffects: []
   gotoSceneName: MainGameUI
 --- !u!4 &159101422
 Transform:
