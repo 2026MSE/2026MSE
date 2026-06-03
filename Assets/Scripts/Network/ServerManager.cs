@@ -364,6 +364,7 @@ public class ServerManager : MonoBehaviour
             catch (System.Exception e)
             {
                 Debug.LogError($"[Error] 이미지 요청 실패: {e.Message}");
+                // 에러가 났을 때, DownloadHandler의 텍스트를 강제로 출력해봅니다.
                 return null;
             }
             return null;

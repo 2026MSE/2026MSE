@@ -26,4 +26,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/InGame/YutRoom.unity
     guid: 51cd0966cfd3bc8439b8a4aae774a680
+  - enabled: 1
+    path: Assets/Scenes/emoticon.unity
+    guid: 6c3091a5cc3aa964fa695a6f7d56fc04
   m_configObjects: {}

@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class PlayerInstantiate : MonoBehaviour
 {
@@ -18,6 +19,7 @@ public class PlayerInstantiate : MonoBehaviour
         main_game_manager = MainGameManager.instance;
 
         yield return new WaitUntil(() => main_game_manager.game_stat.turnInfo.currentTurnPlayerId != null);
+        SceneManager.LoadScene("emoticon", LoadSceneMode.Additive);
         Instantiate();
     }
 
@@ -39,6 +41,8 @@ public class PlayerInstantiate : MonoBehaviour
                 spawnedPlayer = Instantiate(playerPrefab, playerSpawnPoints[i++].transform);
             }
 
+            spawnedPlayer.name = player.name;
+
             // 2. 리스트에 담기
             playerObjects.Add(spawnedPlayer);
 
@@ -49,7 +53,6 @@ public class PlayerInstantiate : MonoBehaviour
             {
                 spawnedPlayer.GetComponent<PlayerController>().is_local_player = true;
             }
-            playerObjects[playerObjects.Count - 1].name = player.name;
         }
     }
     

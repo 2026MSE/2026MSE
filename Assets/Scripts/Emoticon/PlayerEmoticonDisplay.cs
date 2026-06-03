@@ -12,10 +12,10 @@ public class PlayerEmoticonDisplay : MonoBehaviour
     void Update()
     {
         // 아직 ID를 못 받았거나, 플레이어 목록이 없으면 무시
-        if (string.IsNullOrEmpty(ownerId) || PlayerManager.instance.playerList == null) return;
+        if (string.IsNullOrEmpty(ownerId) || MainGameManager.instance.game_stat.players == null) return;
 
         // 전체 플레이어 목록에서 '나'의 정보를 찾음
-        PlayerInfo myInfo = PlayerManager.instance.playerList.Find(p => p.playerId == ownerId);
+        PlayerInfo myInfo = MainGameManager.instance.game_stat.players.Find(p => p.playerId == ownerId);
 
         if (myInfo != null)
         {
