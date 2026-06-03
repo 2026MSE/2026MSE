@@ -257,6 +257,45 @@ public class ServerManager : MonoBehaviour
 
         return;
     }
+    // 영준 추가 6/3
+    //이모지 Giphy 목록을 받아오는 GET 요청과 내가 선택한 이모티콘 주소를 보낼 POST 요청 함수
+    public async UniTask<GiphyResponseData> GetGiphyTrendingRequest(int limit = 12)
+    {
+        if (!isUsingServer) return null;
+
+        string uri = $"{serverUrl}/api/giphy/trending?limit={limit}";
+
+        // 이미 만들어둔 공통 함수 활용
+        string result = await FetchDataFromServer(uri);
+
+        if (result != null)
+        {
+            var apiResponse = JsonConvert.DeserializeObject<ApiResponse<GiphyResponseData>>(result);
+            return apiResponse?.data;
+        }
+        return null;
+    }
+
+    public async UniTask<bool> SendEmoticonRequest(string emoticonUrl)
+    {
+        if (!isUsingServer) return false;
+        if (playerManager.this_player == null) return false;
+
+        string uri = $"{serverUrl}/api/avatar/emoticon";
+        var requestBody = new
+        {
+            playerId = playerManager.this_player.id,
+            emoticonUrl = emoticonUrl
+        };
+
+        // JsonUtility 대신 Newtonsoft.Json으로 무명 객체 직렬화
+        string jsonBody = JsonConvert.SerializeObject(requestBody);
+
+        // 이미 만들어둔 공통 함수 활용
+        string result = await SendJsonToServer(uri, jsonBody);
+
+        return result != null; // 성공적으로 응답이 오면 true 반환
+    }
 
 
     // 이 아래로는 서버와 직접 통신하는 함수들
@@ -308,7 +347,7 @@ public class ServerManager : MonoBehaviour
             }
         }
     }
-    private async UniTask<Texture2D> FetchTextureFromServer(string target_url)
+    public async UniTask<Texture2D> FetchTextureFromServer(string target_url)
     {
         using (var request = UnityWebRequestTexture.GetTexture(target_url))
         {
