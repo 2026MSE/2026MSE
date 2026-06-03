@@ -211,3 +211,35 @@ public class DeclareResponse
 
     public HallState state;
 }
+//6/3 영준 추가
+// --- [Giphy API 역직렬화를 위한 데이터 모델] ---
+
+[System.Serializable]
+public class GiphyResponseData
+{
+    [Newtonsoft.Json.JsonProperty("data")]
+    public System.Collections.Generic.List<GiphyGifObject> gifList;
+}
+
+[System.Serializable]
+public class GiphyGifObject
+{
+    public string id;
+    public string title;
+    public GiphyImages images;
+}
+
+[System.Serializable]
+public class GiphyImages
+{
+    public GiphyOriginal fixed_height;
+    public GiphyOriginal original;
+}
+
+[System.Serializable]
+public class GiphyOriginal
+{
+    public string url;
+    public string width;
+    public string height;
+}

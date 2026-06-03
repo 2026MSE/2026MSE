@@ -18,17 +18,28 @@ public class PlayerInstantiate : MonoBehaviour
         int i = 1;
         foreach(PlayerInfo player in playerManager.playerList)
         {
-            if(player.playerId == MainGameManager.instance.turnInfo.currentTurnPlayerId)
+            //6/3 영준 기존 조건문 이모지관련 수정
+            // 1. Instantiate 한 결과를 먼저 변수(spawnedPlayer)에 담습니다.
+            GameObject spawnedPlayer;
+
+            if (player.playerId == MainGameManager.instance.turnInfo.currentTurnPlayerId)
             {
-                playerObjects.Add(Instantiate(playerPrefab, playerSpawnPoints[0].transform));
+                spawnedPlayer = Instantiate(playerPrefab, playerSpawnPoints[0].transform);
             }
             else
             {
-                playerObjects.Add(Instantiate(playerPrefab, playerSpawnPoints[i++].transform));
+                spawnedPlayer = Instantiate(playerPrefab, playerSpawnPoints[i++].transform);
             }
-            if(player.playerId == playerManager.this_player.id)
+
+            // 2. 리스트에 담기
+            playerObjects.Add(spawnedPlayer);
+
+            // 3. [추가된 부분] 방금 스폰된 캐릭터에게 "너의 ID는 이거야!" 라고 알려줍니다.
+            spawnedPlayer.GetComponent<PlayerEmoticonDisplay>().ownerId = player.playerId;
+
+            if (player.playerId == playerManager.this_player.id)
             {
-                playerObjects[playerObjects.Count - 1].GetComponent<PlayerController>().is_local_player = true;
+                spawnedPlayer.GetComponent<PlayerController>().is_local_player = true;
             }
         }
     }
