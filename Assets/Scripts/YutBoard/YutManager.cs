@@ -62,7 +62,7 @@
 //        if (main_game_manager.game_stat.boardStatus.allPieces.Count <= 0) return;
 
 //        UpdateBoardUI();
-        
+
 //        if (main_game_manager.game_stat.turnPhase == TurnPhase.YUT_MOVE_DONE)
 //        {
 //            turnEndButton.gameObject.SetActive(true);
@@ -86,11 +86,11 @@
 //    private void MyTurnStart()
 //    {
 //        var yut_results = main_game_manager.game_stat.pendingYutResults;
-        
+
 //        if (throwResultText != null)
 //        {
 //            string tmp_string = "남은 이동 : ";
-//            foreach(var result in yut_results)
+//            foreach (var result in yut_results)
 //            {
 //                tmp_string += TranslateYutResult(result.result) + " ";
 //            }
@@ -103,7 +103,6 @@
 //    private void CheckMovablePieces()
 //    {
 //        List<PieceInfo> movablePieces = new List<PieceInfo>();
-        
 
 //        foreach (var moveOption in movablePieces)
 //        {
@@ -144,9 +143,7 @@
 //        }
 //    }
 
-//    // =========================================================
-//    // [추가 턴 시작] ThrowResponse 기반
-//    // =========================================================
+//    // 추가턴 시에 던지는 버튼 눌렀을 때
 //    private async void OnThrowButtonClicked()
 //    {
 //        throwButton.interactable = false;
@@ -169,9 +166,8 @@
 //        CheckMovablePieces();
 //    }
 
-//    // =========================================================
-//    // 8. 보드 UI 갱신 로직 (그리드 중앙 정렬 및 업기 처리)
-//    // =========================================================
+    
+//    // 보드 UI 업데이트
 //    private void UpdateBoardUI()
 //    {
 //        BoardStatusResponse state = main_game_manager.game_stat.boardStatus;
@@ -189,7 +185,7 @@
 //        {
 //            foreach (var pieceData in kvp.Value)
 //            {
-//                if (allPiecesDict.TryGetValue(pieceData.id, out PieceController pieceObj))
+//                if (allPiecesDict.TryGetValue(pieceData.pieceId, out PieceController pieceObj))
 //                {
 //                    Vector3 targetPosition = Vector3.zero;
 //                    int pos = pieceData.currentPosition;
@@ -232,7 +228,7 @@
 //        }
 //    }
 
-    
+
 //    private string TranslateYutResult(YutName name)
 //    {
 //        switch (name.ToString().ToUpper())

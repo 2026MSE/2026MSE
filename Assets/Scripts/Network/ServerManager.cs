@@ -94,6 +94,7 @@ public class ServerManager : MonoBehaviour
             
             if (is_debugging)
             {
+                Debug.Log(main_game_manager.game_stat.turnPhase.ToString());
                 if (!playerManager.isMyTurn() && main_game_manager.game_stat.turnInfo.currentTurnPlayerId != null)
                 { 
                     playerManager.this_player.id = main_game_manager.game_stat.turnInfo.currentTurnPlayerId;

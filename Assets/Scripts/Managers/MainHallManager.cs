@@ -59,16 +59,22 @@ public class MainHallManager : MonoBehaviour
     public void challengeO()
     {
         ServerManager.instance.ChallengeRequest(true).Forget();
+        challengeOButton.gameObject.SetActive(false);
+        challengeXButton.gameObject.SetActive(false);
     }
 
     public void challengeX()
     {
         ServerManager.instance.ChallengeRequest(false).Forget();
+        challengeOButton.gameObject.SetActive(false);
+        challengeXButton.gameObject.SetActive(false);
     }
 
     public void challengeConfirm()
     {
         ServerManager.instance.ChallengeConfirmRequest().Forget();
+        challenge_confirm_button.gameObject.SetActive(false);
+        challenge_result_text.gameObject.SetActive(false);
     }
 
     void CheckDeclareTurn()
@@ -149,6 +155,7 @@ public class MainHallManager : MonoBehaviour
         if (main_game_manager.game_stat.lastJudgeResponse == null)
         {
             challenge_result_text.text = "No Challenge";
+            
         }
         else
         {
@@ -257,24 +264,24 @@ public class MainHallManager : MonoBehaviour
         switch (tail_count)
         {
             case 0:
-                all_result_text.text = "Mo";
+                all_result_text.text = YutName.MO.ToString();
                 break;
             case 1:
-                all_result_text.text = "Do";
+                all_result_text.text = YutName.DO.ToString();
                 break;
             case 2:
-                all_result_text.text = "Gae";
+                all_result_text.text = YutName.GAE.ToString();
                 break;
             case 3:
-                all_result_text.text = "Geol";
+                all_result_text.text = YutName.GEOL.ToString();
                 break;
             case 4:
-                all_result_text.text = "Yut";
+                all_result_text.text = YutName.YUT.ToString();
                 break;
         }
         if(tail_count == 1 && declareSticks[0] == StickSide.BACK)
         {
-            all_result_text.text = "BackDo";
+            all_result_text.text = YutName.BACK_DO.ToString();
         }
     }
 }

@@ -25,7 +25,7 @@
 //    {
 //        var state = main_game_manager.game_stat.boardStatus;
 
-//        while(state != null && state.allPieces != null)
+//        while (state != null && state.allPieces != null)
 //        {
 //            Debug.LogError("보드 불러오기 에러");
 //            await UniTask.Delay(1000);
