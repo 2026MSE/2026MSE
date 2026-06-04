@@ -1,246 +1,321 @@
-//using System.Collections.Generic;
-//using System.Threading.Tasks;
-//using UnityEngine;
-//using UnityEngine.UI;
-//using TMPro;
-//using DG.Tweening;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using UnityEngine;
+using UnityEngine.UI;
+using TMPro;
+using DG.Tweening;
+using Cysharp.Threading.Tasks;
 
-//public class YutManager : MonoBehaviour
-//{
-//    public static YutManager Instance { get; private set; }
+public class YutManager : MonoBehaviour
+{
+    public static YutManager Instance { get; private set; }
 
-//    [Header("보드판 노드")]
-//    public Transform[] boardNodes;
+    [Header("프리팹")]
+    public GameObject selectMove_prefab;
 
-//    [Header("대기, 도착 구역")]
-//    public Transform waitingArea;
-//    public Transform finishArea;
+    [Header("보드판 노드")]
+    public Transform[] boardNodes;
 
-//    [Header("UI 연결")]
-//    public Button throwButton;
-//    public Button turnEndButton;
-//    public TextMeshProUGUI throwResultText;
+    [Header("대기, 도착 구역")]
+    public Transform waitingArea;
+    public Transform finishArea;
 
-//    [Header("말 배치 수치값")]
-//    public float spacing = 1.2f;
-//    public int maxPerRow = 4;
-//    public int maxRows = 4;
-//    public float piggybackHeight = 0.5f;
-//    public float plateYOffset = 0.0f;
+    [Header("UI 연결")]
+    public Button throwButton;
+    public Button turnEndButton;
+    public TextMeshProUGUI throwResultText;
 
-//    private Dictionary<string, PieceController> allPiecesDict = new Dictionary<string, PieceController>();
+    [Header("말 배치 수치값")]
+    public float spacing = 1.2f;
+    public int maxPerRow = 4;
+    public int maxRows = 4;
+    public float piggybackHeight = 0.5f;
+    public float plateYOffset = 0.0f;
 
-//    private MainGameManager main_game_manager;
-//    private ServerManager server_manager;
-//    private PlayerManager player_manager;
+    private Dictionary<string, PieceController> allPiecesDict = new Dictionary<string, PieceController>();
+    private List<GameObject> select_moves = new List<GameObject>();
 
-//    private bool is_selecting = false;
+    private MainGameManager main_game_manager;
+    private ServerManager server_manager;
+    private PlayerManager player_manager;
 
-//    private void Awake()
-//    {
-//        if (Instance == null) Instance = this;
-//        else Destroy(gameObject);
-//    }
+    private bool is_selecting = false;
 
-//    private void Start()
-//    {
-//        main_game_manager = MainGameManager.instance;
-//        server_manager = ServerManager.instance;
-//        player_manager = PlayerManager.instance;
+    private void Awake()
+    {
+        if (Instance == null) Instance = this;
+        else Destroy(gameObject);
+    }
 
-//        throwButton.gameObject.SetActive(false);
-//        throwButton.onClick.AddListener(OnThrowButtonClicked);
-//        is_selecting = false;
-//        if (player_manager.isMyTurn())
-//        {
-//            MyTurnStart();
-//        }
-//    }
+    private void Start()
+    {
+        main_game_manager = MainGameManager.instance;
+        server_manager = ServerManager.instance;
+        player_manager = PlayerManager.instance;
 
-//    private void Update()
-//    {
-//        if (main_game_manager.game_stat.boardStatus.allPieces.Count <= 0) return;
+        throwButton.gameObject.SetActive(false);
+        throwButton.onClick.AddListener(OnThrowButtonClicked);
+        turnEndButton.onClick.AddListener(OnTurnEndButtonClicked);
+        is_selecting = false;
+        if (player_manager.isMyTurn())
+        {
+            MyTurnStart();
+        }
+        MoveListUIUpdate().Forget();
+    }
 
-//        UpdateBoardUI();
+    private void Update()
+    {
+        if (main_game_manager.game_stat.boardStatus.allPieces.Count <= 0) return;
 
-//        if (main_game_manager.game_stat.turnPhase == TurnPhase.YUT_MOVE_DONE)
-//        {
-//            turnEndButton.gameObject.SetActive(true);
-//            throwButton.gameObject.SetActive(false);
-//        }
-//    }
+        UpdateBoardUI();
 
-//    public void RegisterPiece(PieceController piece)
-//    {
-//        if (!allPiecesDict.ContainsKey(piece.pieceId))
-//        {
-//            allPiecesDict.Add(piece.pieceId, piece);
-//        }
-//    }
+        if (main_game_manager.game_stat.turnPhase == TurnPhase.YUT_MOVE_DONE)
+        {
+            turnEndButton.gameObject.SetActive(true);
+            throwButton.gameObject.SetActive(false);
+        }
+    }
 
-//    public void StartGame()
-//    {
-//        UpdateBoardUI();
-//    }
+    public void RegisterPiece(PieceController piece)
+    {
+        if (!allPiecesDict.ContainsKey(piece.pieceId))
+        {
+            allPiecesDict.Add(piece.pieceId, piece);
+        }
+    }
 
-//    private void MyTurnStart()
-//    {
-//        var yut_results = main_game_manager.game_stat.pendingYutResults;
+    public void StartGame()
+    {
+        UpdateBoardUI();
+    }
 
-//        if (throwResultText != null)
-//        {
-//            string tmp_string = "남은 이동 : ";
-//            foreach (var result in yut_results)
-//            {
-//                tmp_string += TranslateYutResult(result.result) + " ";
-//            }
-//            throwResultText.text = tmp_string;
-//        }
+    private void MyTurnStart()
+    {
+        var yut_results = main_game_manager.game_stat.pendingYutResults;
 
-//        CheckMovablePieces();
-//    }
+        if (throwResultText != null)
+        {
+            string tmp_string = "남은 이동 : ";
+            foreach (var result in yut_results)
+            {
+                tmp_string += TranslateYutResult(result.result) + " ";
+            }
+            throwResultText.text = tmp_string;
+        }
 
-//    private void CheckMovablePieces()
-//    {
-//        List<PieceInfo> movablePieces = new List<PieceInfo>();
+        CheckMovablePieces();
+    }
 
-//        foreach (var moveOption in movablePieces)
-//        {
-//            if (allPiecesDict.TryGetValue(moveOption.pieceId, out PieceController pieceObj))
-//            {
-//                pieceObj.SetClickable(true);
-//            }
-//        }
-//    }
+    private async void CheckMovablePieces()
+    {
+        await UniTask.WaitUntil(() => main_game_manager.moveListResponse != null);
 
-//    public async void OnPieceSelected(string pieceId)
-//    {
-//        is_selecting = true;
+        var movablePieces = main_game_manager.moveListResponse.moveGroups[0].movablePieces;
 
-//        foreach (var piece in allPiecesDict.Values)
-//            piece.SetClickable(false);
+        foreach (var moveOption in movablePieces)
+        {
+            if (allPiecesDict.TryGetValue(moveOption.pieceId, out PieceController pieceObj))
+            {
+                pieceObj.SetClickable(true);
+            }
+        }
+    }
 
-//        await ServerManager.instance.MovePieceRequest(pieceId, target_move);
+    public void OnPieceSelected(string pieceId)
+    {
+        if (is_selecting)
+        {
+            if (select_moves.Count >= 1 && select_moves[0].GetComponent<MoveSelect>().pieceId == pieceId)
+            {
+                select_moves.ForEach(move => Destroy(move));
+                select_moves.Clear();
+                is_selecting = false;
 
-//        // ServerManager의 폴링 대기
-//        await Task.Delay(1000);
+                var tmp1 = allPiecesDict.TryGetValue(pieceId, out PieceController piece1);
+                piece1.transform.localScale = Vector3.one * 1.5f;
+                return;
+            }
+        }
+        else
+        {
+            is_selecting = true;
+        }
 
-//        var state = MainGameManager.instance.boardStatusResponse;
-//        UpdateBoardUI(state);
+        select_moves.ForEach(move => Destroy(move));
+        select_moves.Clear();
 
-//        Debug.Log("이동 연출 대기 중...");
-//        await Task.Delay(1500);
+        foreach(var kvp in allPiecesDict)
+        {
+            kvp.Value.transform.localScale = Vector3.one * 1.5f;
+        }
 
-//        if (MainGameManager.instance.boardStatusResponse.extraTurn)
-//        {
-//            Debug.Log("한 번 더 던집니다! 버튼 활성화.");
-//            throwButton.gameObject.SetActive(true);
-//            throwButton.interactable = true;
-//        }
-//        else
-//        {
-//            await ServerManager.instance.EndTurnRequest();
-//        }
-//    }
+        var tmp = allPiecesDict.TryGetValue(pieceId, out PieceController piece);
+        piece.transform.localScale = Vector3.one * 2f;
 
-//    // 추가턴 시에 던지는 버튼 눌렀을 때
-//    private async void OnThrowButtonClicked()
-//    {
-//        throwButton.interactable = false;
+        List<MoveGroup> moveGroups = main_game_manager.moveListResponse.moveGroups;
+        foreach (var moveGroup in moveGroups)
+        {
+            foreach(var move in moveGroup.movablePieces)
+            {
+                if (move.pieceId == pieceId)
+                {
+                    var tmp_obj = Instantiate(selectMove_prefab, boardNodes[move.targetPosition]);
+                    select_moves.Add(tmp_obj);
 
-//        await ServerManager.instance.ThrowYutRequest();
+                    tmp_obj.GetComponent<MoveSelect>().this_move = moveGroup;
+                    tmp_obj.GetComponent<MoveSelect>().pieceId = pieceId;
+                }
+            }
+        }
+    }
+    // 이동 명령을 했을 때
+    public void OnClickMove(MoveGroup move, string pieceId)
+    {
+        foreach (var kvp in allPiecesDict)
+        {
+            kvp.Value.transform.localScale = Vector3.one * 1.5f;
+            kvp.Value.SetClickable(false);
+        }
 
-//        await Task.Delay(1000);
+        is_selecting = false;
+        select_moves.ForEach(move => Destroy(move));
+        select_moves.Clear();
+        server_manager.MovePieceRequest(pieceId, move.yutResultIndex).Forget();
+    }
 
-//        var state = MainGameManager.instance.boardStatusResponse;
+    // 추가턴 시에 던지는 버튼 눌렀을 때
+    private async void OnThrowButtonClicked()
+    {
+        throwButton.interactable = false;
 
-//        string throwResultStr = TranslateYutResult(state.throwResult.yutResult.ToString());
-//        Debug.Log($"추가 던지기 결과: {throwResultStr}");
+        ServerManager.instance.YutRequest().Forget();
 
-//        if (throwResultText != null)
-//        {
-//            throwResultText.text = $"결과: {throwResultStr}";
-//        }
+        await UniTask.WaitUntil(() => main_game_manager.throwResponse != null);
 
-//        throwButton.gameObject.SetActive(false);
-//        CheckMovablePieces();
-//    }
+        string throwResultStr = TranslateYutResult(main_game_manager.throwResponse.yutResult.result);
+        
+        // movelist 수정 후 고쳐야함.
+        Debug.Log($"추가 던지기 결과: {throwResultStr}");
 
-    
-//    // 보드 UI 업데이트
-//    private void UpdateBoardUI()
-//    {
-//        BoardStatusResponse state = main_game_manager.game_stat.boardStatus;
+        if (throwResultText != null)
+        {
+            throwResultText.text = $"결과: {throwResultStr}";
+        }
 
-//        if (state.allPieces == null) return;
+        throwButton.gameObject.SetActive(false);
+        CheckMovablePieces();
+    }
 
-//        int waitingCount = 0;
-//        int finishCount = 0;
-//        Dictionary<int, int> nodePieceCount = new Dictionary<int, int>();
+    private void OnTurnEndButtonClicked()
+    {
+        turnEndButton.gameObject.SetActive(false);
+        ServerManager.instance.EndTurnRequest().Forget();
+    }
 
-//        float startX = -(maxPerRow - 1) * spacing / 2f;
-//        float startZ = -(maxRows - 1) * spacing / 2f;
+    private async UniTaskVoid MoveListUIUpdate()
+    {
+        while(main_game_manager.game_stat.turnPhase != TurnPhase.YUT_MOVE_DONE)
+        {
+            await server_manager.MoveListRequest();
 
-//        foreach (var kvp in state.allPieces)
-//        {
-//            foreach (var pieceData in kvp.Value)
-//            {
-//                if (allPiecesDict.TryGetValue(pieceData.pieceId, out PieceController pieceObj))
-//                {
-//                    Vector3 targetPosition = Vector3.zero;
-//                    int pos = pieceData.currentPosition;
+            var move_list = main_game_manager.moveListResponse;
 
-//                    if (pos == -1) // 대기석
-//                    {
-//                        float offsetX = startX + (waitingCount % maxPerRow) * spacing;
-//                        float offsetZ = startZ + (waitingCount / maxPerRow) * spacing;
+            if (throwResultText != null)
+            {
+                string tmp_string = "남은 이동 : ";
+                if(move_list == null)
+                {
+                    tmp_string += "없음";
+                }
+                else
+                {
+                    foreach (var move in move_list.moveGroups)
+                    {
+                        tmp_string += TranslateYutResult(move.yutName) + " ";
+                    }
+                }
+                throwResultText.text = tmp_string;
+            }
+        }
+    }
 
-//                        if (waitingArea != null)
-//                        {
-//                            targetPosition = waitingArea.position + new Vector3(offsetX, plateYOffset, offsetZ);
-//                        }
-//                        waitingCount++;
-//                    }
-//                    else if (pos == 99) // 완주석
-//                    {
-//                        float offsetX = startX + (finishCount % maxPerRow) * spacing;
-//                        float offsetZ = startZ + (finishCount / maxPerRow) * spacing;
+    // 보드 UI 업데이트
+    private async void UpdateBoardUI()
+    {
+        await UniTask.WaitUntil(() => main_game_manager.game_stat.boardStatus != null);
 
-//                        if (finishArea != null)
-//                        {
-//                            targetPosition = finishArea.position + new Vector3(offsetX, plateYOffset, offsetZ);
-//                        }
-//                        finishCount++;
-//                    }
-//                    else // 보드판 위
-//                    {
-//                        if (!nodePieceCount.ContainsKey(pos)) nodePieceCount[pos] = 0;
+        BoardStatusResponse state = main_game_manager.game_stat.boardStatus;
 
-//                        float offsetY = plateYOffset + (nodePieceCount[pos] * piggybackHeight);
-//                        targetPosition = boardNodes[pos].position + new Vector3(0, offsetY, 0);
+        if (state.allPieces == null) return;
 
-//                        nodePieceCount[pos]++;
-//                    }
+        int waitingCount = 0;
+        int finishCount = 0;
+        Dictionary<int, int> nodePieceCount = new Dictionary<int, int>();
 
-//                    pieceObj.transform.DOMove(targetPosition, 0.5f).SetEase(Ease.OutQuad);
-//                }
-//            }
-//        }
-//    }
+        float startX = -(maxPerRow - 1) * spacing / 2f;
+        float startZ = -(maxRows - 1) * spacing / 2f;
+
+        foreach (var kvp in state.allPieces)
+        {
+            foreach (var pieceData in kvp.Value)
+            {
+                if (allPiecesDict.TryGetValue(pieceData.pieceId, out PieceController pieceObj))
+                {
+                    Vector3 targetPosition = Vector3.zero;
+                    int pos = pieceData.currentPosition;
+
+                    if (pos == -1) // 대기석
+                    {
+                        float offsetX = startX + (waitingCount % maxPerRow) * spacing;
+                        float offsetZ = startZ + (waitingCount / maxPerRow) * spacing;
+
+                        if (waitingArea != null)
+                        {
+                            targetPosition = waitingArea.position + new Vector3(offsetX, plateYOffset, offsetZ);
+                        }
+                        waitingCount++;
+                    }
+                    else if (pos == 99) // 완주석
+                    {
+                        float offsetX = startX + (finishCount % maxPerRow) * spacing;
+                        float offsetZ = startZ + (finishCount / maxPerRow) * spacing;
+
+                        if (finishArea != null)
+                        {
+                            targetPosition = finishArea.position + new Vector3(offsetX, plateYOffset, offsetZ);
+                        }
+                        finishCount++;
+                    }
+                    else // 보드판 위
+                    {
+                        if (!nodePieceCount.ContainsKey(pos)) nodePieceCount[pos] = 0;
+
+                        float offsetY = plateYOffset + (nodePieceCount[pos] * piggybackHeight);
+                        targetPosition = boardNodes[pos].position + new Vector3(0, offsetY, 0);
+
+                        nodePieceCount[pos]++;
+                    }
+
+                    pieceObj.transform.DOMove(targetPosition, 0.5f).SetEase(Ease.OutQuad);
+                }
+            }
+        }
+    }
 
 
-//    private string TranslateYutResult(YutName name)
-//    {
-//        switch (name.ToString().ToUpper())
-//        {
-//            case "DO": return "도";
-//            case "GAE": return "개";
-//            case "GEOL": return "걸";
-//            case "YUT": return "윷";
-//            case "MO": return "모";
-//            case "BACK_DO":
-//            case "BACKDO": return "빽도";
-//            default: return name.ToString();
-//        }
-//    }
-//}
+    private string TranslateYutResult(YutName name)
+    {
+        switch (name.ToString().ToUpper())
+        {
+            case "DO": return "도";
+            case "GAE": return "개";
+            case "GEOL": return "걸";
+            case "YUT": return "윷";
+            case "MO": return "모";
+            case "BACK_DO":
+            case "BACKDO": return "빽도";
+            default: return name.ToString();
+        }
+    }
+}

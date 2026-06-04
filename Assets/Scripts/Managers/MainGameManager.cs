@@ -86,16 +86,13 @@ public class MainGameManager : MonoBehaviour
                 PrivateRoom();
                 break;
             case TurnPhase.MAIN_HALL_DECLARE:
-            case TurnPhase.MAIN_HALL_CHALLENGE:
-            case TurnPhase.CHALLENGE_RESULT:
                 MainHall();
                 break;
-            case TurnPhase.CATCH_BONUS_THROW:
             case TurnPhase.YUT_MOVE:
-            case TurnPhase.YUT_MOVE_DONE:
                 YutRoom();
                 break;
             case TurnPhase.TURN_END:
+                MainHall();
                 break;
             case TurnPhase.GAME_OVER:
                 Exit();
@@ -149,6 +146,12 @@ public class MainGameManager : MonoBehaviour
     }
     void PrivateRoom()
     {
+        if(!SceneManager.GetSceneByName("MainHall").IsValid())
+        {
+            gotoSceneName = "MainHall";
+            LoadingScene();
+            return;
+        }
         gotoSceneName = "PrivateRoom";
         LoadingScene(true);
     }

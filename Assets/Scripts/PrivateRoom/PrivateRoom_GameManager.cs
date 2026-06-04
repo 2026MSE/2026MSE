@@ -137,6 +137,7 @@ public class PrivateRoom_GameManager : MonoBehaviour
 
         if (server_manager != null)
         {
+            main_game_manager.throwResponse = null;
             server_manager.PrivateExitRequest().Forget();
             SceneManager.UnloadSceneAsync("PrivateRoom");
         }

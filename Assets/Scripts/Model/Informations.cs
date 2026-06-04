@@ -150,6 +150,8 @@ public class GameStateResponse
     public YutResult currentYutResult;
     public List<YutResult> pendingYutResults;
 
+    public List<MoveResultResponse> moveHistory;
+
     public JudgeResponse lastJudgeResponse;
 
     public long challengeDeadlineMillis;
@@ -330,6 +332,31 @@ public class ChallengeVoteRequest
     public bool challenge;
 }
 
+[System.Serializable]
+public class MoveResultResponse
+{
+    // 이동 이벤트 순번
+    public long moveSequence;
+
+    // 이 이동을 수행한 플레이어
+    public string playerId;
+
+    public string pieceId;
+
+    public List<string> movedPieceIds;
+    public List<string> caughtPieceIds;
+
+    public int fromPosition;
+    public int toPosition;
+
+    public MoveType moveType;
+
+    public bool extraTurn;
+    public bool gameOver;
+
+    private string winnerId;
+}
+
 //6/3 영준 추가
 // --- [Giphy API 역직렬화를 위한 데이터 모델] ---
 
@@ -365,3 +392,4 @@ public class GiphyOriginal
     public string width;
     public string height;
 }
+

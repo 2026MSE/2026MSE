@@ -79,6 +79,9 @@ public class MainHallManager : MonoBehaviour
 
     void CheckDeclareTurn()
     {
+        challenge_confirm_button.gameObject.SetActive(false);
+        challenge_result_text.gameObject.SetActive(false);
+
         if (playerManager.isMyTurn())
         {
             //≥ª ≈œ

@@ -203,14 +203,9 @@ public class ServerManager : MonoBehaviour
         await SendJsonToServer(serverUrl + "/board/move", JsonUtility.ToJson(new MoveRequest { playerId = playerManager.this_player.id, roomId = main_game_manager.game_stat.roomInfo.roomId, pieceId = pieceId, yutResultIndex = result_index }));
     }
 
-    public async UniTask ThrowYutRequest()
-    {
-        await SendJsonToServer(serverUrl + "/board/throw", JsonUtility.ToJson(new GameActionRequest { playerId = playerManager.this_player.id, roomId = main_game_manager.game_stat.roomInfo.roomId }));
-    }
-
     public async UniTask EndTurnRequest()
     {
-        await SendJsonToServer(serverUrl + "/board/end", JsonUtility.ToJson(new GameActionRequest { playerId = playerManager.this_player.id, roomId = main_game_manager.game_stat.roomInfo.roomId }));
+        await SendJsonToServer(serverUrl + "/turn/end", JsonUtility.ToJson(new GameActionRequest { playerId = playerManager.this_player.id, roomId = main_game_manager.game_stat.roomInfo.roomId }));
     }
 
     public async UniTask MoveListRequest()
