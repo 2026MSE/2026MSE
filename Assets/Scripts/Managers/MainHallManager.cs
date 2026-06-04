@@ -43,6 +43,10 @@ public class MainHallManager : MonoBehaviour
         }
         switch (main_game_manager.game_stat.turnPhase)
         {
+            case TurnPhase.PRIVATE_THROW:
+                challenge_confirm_button.gameObject.SetActive(false);
+                challenge_result_text.gameObject.SetActive(false);
+                break;
             case TurnPhase.MAIN_HALL_DECLARE:
                 CheckDeclareTurn();
                 break;

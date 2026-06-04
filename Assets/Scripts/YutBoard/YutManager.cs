@@ -72,8 +72,15 @@ public class YutManager : MonoBehaviour
 
         if (main_game_manager.game_stat.turnPhase == TurnPhase.YUT_MOVE_DONE)
         {
+            CheckMovablePieces();
             turnEndButton.gameObject.SetActive(true);
             throwButton.gameObject.SetActive(false);
+        }
+        else if(main_game_manager.game_stat.turnPhase == TurnPhase.CATCH_BONUS_THROW)
+        {
+            CheckMovablePieces(false);
+            throwButton.gameObject.SetActive(true);
+            turnEndButton.gameObject.SetActive(false);
         }
     }
 
@@ -92,23 +99,20 @@ public class YutManager : MonoBehaviour
 
     private void MyTurnStart()
     {
-        var yut_results = main_game_manager.game_stat.pendingYutResults;
-
-        if (throwResultText != null)
-        {
-            string tmp_string = "남은 이동 : ";
-            foreach (var result in yut_results)
-            {
-                tmp_string += TranslateYutResult(result.result) + " ";
-            }
-            throwResultText.text = tmp_string;
-        }
-
         CheckMovablePieces();
     }
 
-    private async void CheckMovablePieces()
+    private async void CheckMovablePieces(bool switch_on = true)
     {
+        if(!switch_on)
+        {
+            foreach (var kvp in allPiecesDict)
+            {
+                kvp.Value.SetClickable(false);
+            }
+            return;
+        }
+
         await UniTask.WaitUntil(() => main_game_manager.moveListResponse != null);
 
         var movablePieces = main_game_manager.moveListResponse.moveGroups[0].movablePieces;
@@ -170,7 +174,7 @@ public class YutManager : MonoBehaviour
         }
     }
     // 이동 명령을 했을 때
-    public void OnClickMove(MoveGroup move, string pieceId)
+    public async void OnClickMove(MoveGroup move, string pieceId)
     {
         foreach (var kvp in allPiecesDict)
         {
@@ -181,7 +185,9 @@ public class YutManager : MonoBehaviour
         is_selecting = false;
         select_moves.ForEach(move => Destroy(move));
         select_moves.Clear();
-        server_manager.MovePieceRequest(pieceId, move.yutResultIndex).Forget();
+        await server_manager.MovePieceRequest(pieceId, move.yutResultIndex);
+
+        CheckMovablePieces();
     }
 
     // 추가턴 시에 던지는 버튼 눌렀을 때
