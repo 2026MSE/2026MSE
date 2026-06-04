@@ -29,4 +29,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/emoticon.unity
     guid: 6c3091a5cc3aa964fa695a6f7d56fc04
+  - enabled: 1
+    path: Assets/Scenes/InGame/ChallengeRoom.unity
+    guid: bd32a312f6bb1814ba095ea6ad83fa69
   m_configObjects: {}

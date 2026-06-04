@@ -322,6 +322,14 @@ public class MoveRequest
     public int yutResultIndex;
 }
 
+[System.Serializable]
+public class ChallengeVoteRequest
+{
+    public string roomId;
+    public string playerId;
+    public bool challenge;
+}
+
 //6/3 영준 추가
 // --- [Giphy API 역직렬화를 위한 데이터 모델] ---
 

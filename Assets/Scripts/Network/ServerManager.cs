@@ -94,7 +94,7 @@ public class ServerManager : MonoBehaviour
             
             if (is_debugging)
             {
-                if (!playerManager.isMyTurn())
+                if (!playerManager.isMyTurn() && main_game_manager.game_stat.turnInfo.currentTurnPlayerId != null)
                 { 
                     playerManager.this_player.id = main_game_manager.game_stat.turnInfo.currentTurnPlayerId;
                 }
@@ -228,6 +228,26 @@ public class ServerManager : MonoBehaviour
             playerId = playerManager.this_player.id, roomId = main_game_manager.game_stat.roomInfo.roomId, s1 = declareSticks[0], s2 = declareSticks[1] }));
     }
 
+    // /challenge
+    public async UniTaskVoid ChallengeRequest(bool isChallenging)
+    {
+        if (is_debugging)
+        {
+            foreach (var player in main_game_manager.game_stat.players)
+            {
+                await SendJsonToServer(serverUrl + "/hall/challenge", JsonUtility.ToJson(new ChallengeVoteRequest { playerId = player.playerId, roomId = main_game_manager.game_stat.roomInfo.roomId, challenge = false }));
+            }
+        }
+        
+        await SendJsonToServer(serverUrl + "/hall/challenge", JsonUtility.ToJson(new ChallengeVoteRequest { playerId = playerManager.this_player.id, roomId = main_game_manager.game_stat.roomInfo.roomId, challenge = isChallenging }));
+        
+    }
+
+    // /result/confirm
+    public async UniTaskVoid ChallengeConfirmRequest()
+    {
+        await SendJsonToServer(serverUrl + "/hall/challenge/result/confirm", JsonUtility.ToJson(new GameActionRequest { playerId = playerManager.this_player.id, roomId = main_game_manager.game_stat.roomInfo.roomId }));
+    }
 
     // PlayerController /api/avatar
 
@@ -364,7 +384,6 @@ public class ServerManager : MonoBehaviour
             catch (System.Exception e)
             {
                 Debug.LogError($"[Error] 이미지 요청 실패: {e.Message}");
-                // 에러가 났을 때, DownloadHandler의 텍스트를 강제로 출력해봅니다.
                 return null;
             }
             return null;

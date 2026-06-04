@@ -19,7 +19,7 @@ public class PlayerInstantiate : MonoBehaviour
         main_game_manager = MainGameManager.instance;
 
         yield return new WaitUntil(() => main_game_manager.game_stat.turnInfo.currentTurnPlayerId != null);
-        SceneManager.LoadScene("emoticon", LoadSceneMode.Additive);
+        //SceneManager.LoadScene("emoticon", LoadSceneMode.Additive);
         Instantiate();
     }
 
@@ -47,7 +47,7 @@ public class PlayerInstantiate : MonoBehaviour
             playerObjects.Add(spawnedPlayer);
 
             // 3. [추가된 부분] 방금 스폰된 캐릭터에게 "너의 ID는 이거야!" 라고 알려줍니다.
-            spawnedPlayer.GetComponent<PlayerEmoticonDisplay>().ownerId = player.playerId;
+            //spawnedPlayer.GetComponent<PlayerEmoticonDisplay>().ownerId = player.playerId;
 
             if (player.playerId == playerManager.this_player.id)
             {

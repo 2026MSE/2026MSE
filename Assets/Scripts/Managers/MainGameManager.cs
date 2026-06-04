@@ -86,11 +86,9 @@ public class MainGameManager : MonoBehaviour
                 PrivateRoom();
                 break;
             case TurnPhase.MAIN_HALL_DECLARE:
-                MainHall();
-                break;
             case TurnPhase.MAIN_HALL_CHALLENGE:
             case TurnPhase.CHALLENGE_RESULT:
-                ChallengeRoom();
+                MainHall();
                 break;
             case TurnPhase.CATCH_BONUS_THROW:
             case TurnPhase.YUT_MOVE:
@@ -159,11 +157,11 @@ public class MainGameManager : MonoBehaviour
         gotoSceneName = "YutRoom";
         LoadingScene();
     }
-    void ChallengeRoom()
-    {
-        gotoSceneName = "ChallengeRoom";
-        LoadingScene();
-    }
+    //void ChallengeRoom()
+    //{
+    //    gotoSceneName = "ChallengeRoom";
+    //    LoadingScene(true);
+    //}
 
     void Exit()
     {
