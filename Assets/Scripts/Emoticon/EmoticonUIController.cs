@@ -24,9 +24,8 @@ public class EmoticonUIController : MonoBehaviour
         {
             foreach (var gif in giphyData.gifList)
             {
-                // 원본 URL(보낼 용도)과 썸네일 URL(버튼에 띄울 용도) 가져오기
-                string gifUrl = gif.images.original.url;
-                string thumbnailUrl = gif.images.fixed_height.url;
+                string gifUrl = $"https://api.dicebear.com/9.x/bottts/png?seed={gif.id}";
+                string thumbnailUrl = $"https://api.dicebear.com/9.x/bottts/png?seed={gif.id}";
 
                 CreateButton(gifUrl, thumbnailUrl).Forget();
             }

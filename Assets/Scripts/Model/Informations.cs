@@ -345,6 +345,9 @@ public class GiphyImages
 {
     public GiphyOriginal fixed_height;
     public GiphyOriginal original;
+
+    public GiphyOriginal fixed_height_still;
+    public GiphyOriginal original_still;
 }
 
 [System.Serializable]
