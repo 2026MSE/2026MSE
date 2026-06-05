@@ -221,7 +221,17 @@ public class ServerManager : MonoBehaviour
     // /declare
     public async UniTaskVoid DeclareRequest(StickSide[] declareSticks)
     {
-        string result = await SendJsonToServer(serverUrl + "/hall/declare", JsonUtility.ToJson(new DeclareRequest { 
+        if (declareSticks.Length != 2)
+        {
+            await SendJsonToServer(serverUrl + "/hall/declare", JsonUtility.ToJson(new DeclareRequest
+            {
+                playerId = playerManager.this_player.id,
+                roomId = main_game_manager.game_stat.roomInfo.roomId,
+                s1 = declareSticks[0]
+            }));
+            return;
+        }
+        await SendJsonToServer(serverUrl + "/hall/declare", JsonUtility.ToJson(new DeclareRequest { 
             playerId = playerManager.this_player.id, roomId = main_game_manager.game_stat.roomInfo.roomId, s1 = declareSticks[0], s2 = declareSticks[1] }));
     }
 
