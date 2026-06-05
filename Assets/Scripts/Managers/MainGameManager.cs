@@ -147,6 +147,7 @@ public class MainGameManager : MonoBehaviour
     {
         if(!SceneManager.GetSceneByName("MainHall").IsValid())
         {
+            now_pos_phase = TurnPhase.WAITING;
             Debug.Log("MainHall 씬이 로드되지 않았습니다. MainHall 씬으로 이동합니다.");
             gotoSceneName = "MainHall";
             LoadingScene();

@@ -57,11 +57,11 @@ public class YutManager : MonoBehaviour
         throwButton.onClick.AddListener(OnThrowButtonClicked);
         turnEndButton.onClick.AddListener(OnTurnEndButtonClicked);
         is_selecting = false;
+        MoveListUIUpdate().Forget();
         if (player_manager.isMyTurn())
         {
             MyTurnStart();
         }
-        MoveListUIUpdate().Forget();
     }
 
     private void Update()
@@ -116,7 +116,7 @@ public class YutManager : MonoBehaviour
             return;
         }
 
-        await UniTask.WaitUntil(() => main_game_manager.moveListResponse != null);
+        await UniTask.WaitUntil(() => main_game_manager.moveListResponse.moveGroups != null);
         if(main_game_manager.moveListResponse.moveGroups.Count <= 0)
         {
             Debug.Log("이동 가능한 말이 없습니다.");
