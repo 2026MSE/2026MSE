@@ -118,19 +118,30 @@ public class YutManager : MonoBehaviour
             return;
         }
 
-        await UniTask.WaitUntil(() => main_game_manager.moveListResponse != null);
-        if(main_game_manager.moveListResponse == null)
+        await UniTask.WaitUntil(() => main_game_manager != null && main_game_manager.moveListResponse != null,
+            cancellationToken: this.GetCancellationTokenOnDestroy());
+
+        if (main_game_manager.moveListResponse == null)
         {
-            Debug.Log("이동 가능한 말이 없습니다.");
+            Debug.Log("이동 가능한 말이 없습니다. (Response Null)");
             return;
         }
-        await UniTask.WaitUntil(() => main_game_manager.moveListResponse.moveGroups != null);
-        if (main_game_manager.moveListResponse.moveGroups.Count <= 0)
+
+        await UniTask.WaitUntil(() => main_game_manager.moveListResponse != null && main_game_manager.moveListResponse.moveGroups != null,
+            cancellationToken: this.GetCancellationTokenOnDestroy());
+
+        if (main_game_manager.moveListResponse == null ||
+            main_game_manager.moveListResponse.moveGroups == null ||
+            main_game_manager.moveListResponse.moveGroups.Count <= 0)
         {
-            Debug.Log("이동 가능한 말이 없습니다.");
+            Debug.Log("이동 가능한 말이 없습니다. (Groups Empty)");
             return;
         }
-        var movablePieces = main_game_manager.moveListResponse.moveGroups[0].movablePieces;
+
+        var targetGroup = main_game_manager.moveListResponse.moveGroups[0];
+        if (targetGroup == null || targetGroup.movablePieces == null) return;
+
+        var movablePieces = targetGroup.movablePieces;
 
         foreach (var moveOption in movablePieces)
         {
@@ -217,7 +228,7 @@ public class YutManager : MonoBehaviour
         string throwResultStr = TranslateYutResult(main_game_manager.throwResponse.yutResult.result);
         
         // movelist 수정 후 고쳐야함.
-        throwResultText.text += $" {throwResultStr}";
+        //throwResultText.text += $" {throwResultStr}";
 
         if (throwResultText != null)
         {
