@@ -111,7 +111,7 @@ public class MainGameManager : MonoBehaviour
 
     public void LoadingScene(bool is_additive = false)
     {
-        if(SceneManager.GetSceneByName(gotoSceneName).IsValid())
+        if(SceneManager.GetSceneByName(gotoSceneName).IsValid() || SceneManager.GetSceneByName("LoadingScene").IsValid())
         {
             return;
         }
@@ -147,14 +147,17 @@ public class MainGameManager : MonoBehaviour
     {
         if(!SceneManager.GetSceneByName("MainHall").IsValid())
         {
+            Debug.Log("MainHall 씬이 로드되지 않았습니다. MainHall 씬으로 이동합니다.");
             gotoSceneName = "MainHall";
             LoadingScene();
             return;
         }
         if (!playerManager.isMyTurn())
         {
+            Debug.Log("현재 플레이어의 턴이 아닙니다.");
             return;
         }
+        Debug.Log("MainGameManager: PrivateRoom");
         gotoSceneName = "PrivateRoom";
         LoadingScene(true);
     }
