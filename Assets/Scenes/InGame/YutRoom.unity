@@ -726,7 +726,7 @@ GameObject:
   - component: {fileID: 213792870}
   - component: {fileID: 213792869}
   m_Layer: 5
-  m_Name: ThrowButton (1)
+  m_Name: Throw_exit
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3244,7 +3244,7 @@ MonoBehaviour:
   throwButton: {fileID: 323981625}
   turnEndButton: {fileID: 2067599393}
   throwResultText: {fileID: 12867299}
-  throw_exit_button: {fileID: 0}
+  throw_exit_button: {fileID: 213792869}
   spacing: 2
   maxPerRow: 4
   maxRows: 4
@@ -4543,7 +4543,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Throw
+  m_text: Exit Throw
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: ac2fc17f568582848b253b6816897e9c, type: 2}
   m_sharedMaterial: {fileID: 4322811560945341816, guid: ac2fc17f568582848b253b6816897e9c,
