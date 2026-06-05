@@ -74,7 +74,6 @@ public class MainGameManager : MonoBehaviour
         
         // 예외처리
         if (currentClientScene != ClientScene.IN_GAME
-            || (!playerManager.isMyTurn() && game_stat.turnPhase == TurnPhase.PRIVATE_THROW)
             || game_stat.turnPhase == now_pos_phase)
             return;
 
@@ -150,6 +149,10 @@ public class MainGameManager : MonoBehaviour
         {
             gotoSceneName = "MainHall";
             LoadingScene();
+            return;
+        }
+        if (!playerManager.isMyTurn())
+        {
             return;
         }
         gotoSceneName = "PrivateRoom";

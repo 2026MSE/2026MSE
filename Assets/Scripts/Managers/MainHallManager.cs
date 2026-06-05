@@ -112,6 +112,7 @@ public class MainHallManager : MonoBehaviour
     
     void ChallengeTurn()
     {
+        SetYutResultText();
         declareUI.SetActive(false); resultUI.SetActive(true);
         public_result_texts[2].gameObject.SetActive(true);
         public_result_texts[3].gameObject.SetActive(true);
