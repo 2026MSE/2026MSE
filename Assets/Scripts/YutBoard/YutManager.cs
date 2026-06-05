@@ -24,6 +24,7 @@ public class YutManager : MonoBehaviour
     public Button throwButton;
     public Button turnEndButton;
     public TextMeshProUGUI throwResultText;
+    public Button throw_exit_button;
 
     [Header("말 배치 수치값")]
     public float spacing = 1.2f;
@@ -55,6 +56,7 @@ public class YutManager : MonoBehaviour
 
         throwButton.gameObject.SetActive(false);
         throwButton.onClick.AddListener(OnThrowButtonClicked);
+        throw_exit_button.onClick.AddListener(() => { server_manager.PrivateExitRequest().Forget(); throw_exit_button.gameObject.SetActive(false); });
         turnEndButton.onClick.AddListener(OnTurnEndButtonClicked);
         is_selecting = false;
         MoveListUIUpdate().Forget();
@@ -215,7 +217,7 @@ public class YutManager : MonoBehaviour
         string throwResultStr = TranslateYutResult(main_game_manager.throwResponse.yutResult.result);
         
         // movelist 수정 후 고쳐야함.
-        Debug.Log($"추가 던지기 결과: {throwResultStr}");
+        throwResultText.text += $" {throwResultStr}";
 
         if (throwResultText != null)
         {
@@ -223,6 +225,7 @@ public class YutManager : MonoBehaviour
         }
 
         throwButton.gameObject.SetActive(false);
+        throw_exit_button.gameObject.SetActive(true);
         CheckMovablePieces();
     }
 
