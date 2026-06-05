@@ -117,7 +117,13 @@ public class YutManager : MonoBehaviour
         }
 
         await UniTask.WaitUntil(() => main_game_manager.moveListResponse != null);
-        if (main_game_manager.moveListResponse.moveGroups == null || main_game_manager.moveListResponse.moveGroups.Count <= 0)
+        if(main_game_manager.moveListResponse == null)
+        {
+            Debug.Log("이동 가능한 말이 없습니다.");
+            return;
+        }
+        await UniTask.WaitUntil(() => main_game_manager.moveListResponse.moveGroups != null);
+        if (main_game_manager.moveListResponse.moveGroups.Count <= 0)
         {
             Debug.Log("이동 가능한 말이 없습니다.");
             return;
