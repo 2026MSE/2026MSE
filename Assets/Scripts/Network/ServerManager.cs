@@ -91,10 +91,10 @@ public class ServerManager : MonoBehaviour
             //Debug.Log(game_state_response.data.roomInfo.playerIds);
 
             main_game_manager.game_stat = game_state_response.data;
-            
+
+            Debug.Log(main_game_manager.game_stat.turnPhase.ToString());
             if (is_debugging)
             {
-                Debug.Log(main_game_manager.game_stat.turnPhase.ToString());
                 if (!playerManager.isMyTurn() && main_game_manager.game_stat.turnInfo.currentTurnPlayerId != null)
                 { 
                     playerManager.this_player.id = main_game_manager.game_stat.turnInfo.currentTurnPlayerId;
@@ -156,7 +156,7 @@ public class ServerManager : MonoBehaviour
         if (result != null)
         {
             ApiResponse<RoomInfo> response = JsonConvert.DeserializeObject<ApiResponse<RoomInfo>>(result);
-            //Debug.Log($"[RoomRequest] {response.message} RoomRequest RoomID : {response.data.roomId}");
+            Debug.Log($"[RoomRequest] {response.message} RoomRequest RoomID : {response.data.roomId}");
 
             main_game_manager.game_stat.roomInfo = response.data;
             if (request.playerId != playerManager.this_player.id)
@@ -205,6 +205,7 @@ public class ServerManager : MonoBehaviour
 
     public async UniTask EndTurnRequest()
     {
+        Debug.Log("EndTurnRequest called");
         await SendJsonToServer(serverUrl + "/turn/end", JsonUtility.ToJson(new GameActionRequest { playerId = playerManager.this_player.id, roomId = main_game_manager.game_stat.roomInfo.roomId }));
     }
 

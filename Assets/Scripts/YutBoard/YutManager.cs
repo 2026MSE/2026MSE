@@ -68,10 +68,13 @@ public class YutManager : MonoBehaviour
     {
         if (main_game_manager.game_stat.boardStatus.allPieces.Count <= 0) return;
 
-        UpdateBoardUI();
-
+        if(main_game_manager.game_stat.turnPhase == TurnPhase.YUT_MOVE)
+        {
+            UpdateBoardUI();
+        }
         if (main_game_manager.game_stat.turnPhase == TurnPhase.YUT_MOVE_DONE)
         {
+            UpdateBoardUI();
             CheckMovablePieces();
             turnEndButton.gameObject.SetActive(true);
             throwButton.gameObject.SetActive(false);
@@ -114,7 +117,11 @@ public class YutManager : MonoBehaviour
         }
 
         await UniTask.WaitUntil(() => main_game_manager.moveListResponse != null);
-
+        if(main_game_manager.moveListResponse.moveGroups.Count <= 0)
+        {
+            Debug.Log("이동 가능한 말이 없습니다.");
+            return;
+        }
         var movablePieces = main_game_manager.moveListResponse.moveGroups[0].movablePieces;
 
         foreach (var moveOption in movablePieces)
