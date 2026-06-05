@@ -246,17 +246,28 @@ public class MainHallManager : MonoBehaviour
     void SetYutResultText()
     {
         StickSide[] sticks = new StickSide[4];
-        if(declareSticks.Length <= 1)
+        if (declareSticks.Length <= 1)
         {
-            sticks[0] = declareSticks[0];
+            if (main_game_manager.game_stat.turnPhase == TurnPhase.MAIN_HALL_DECLARE)
+                sticks[0] = declareSticks[0];
+            else
+                sticks[0] = main_game_manager.game_stat.declaredPrivateSticks[0];
             sticks[1] = main_game_manager.game_stat.publicSticks[0];
             sticks[2] = main_game_manager.game_stat.publicSticks[1];
             sticks[3] = main_game_manager.game_stat.publicSticks[2];
         }
         else
         {
-            sticks[0] = declareSticks[0];
-            sticks[1] = declareSticks[1];
+            if (main_game_manager.game_stat.turnPhase == TurnPhase.MAIN_HALL_DECLARE)
+            {
+                sticks[0] = declareSticks[0];
+                sticks[1] = declareSticks[1];
+            }
+            else
+            {
+                sticks[0] = main_game_manager.game_stat.declaredPrivateSticks[0];
+                sticks[1] = main_game_manager.game_stat.declaredPrivateSticks[1];
+            }
             sticks[2] = main_game_manager.game_stat.publicSticks[0];
             sticks[3] = main_game_manager.game_stat.publicSticks[1];
         }
