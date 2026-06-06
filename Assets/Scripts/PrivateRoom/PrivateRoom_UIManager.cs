@@ -65,6 +65,7 @@ public class PrivateRoom_UIManager : MonoBehaviour
 
     void OnThrowButtonClicked()
     {
+        throwButton.gameObject.SetActive(false);
         // 던지기 버튼 클릭 시 게임 매니저에 상태 변경 요청
         PrivateRoom_GameManager.instance.SetState(PrivateRoomState.Throwing);
     }
@@ -77,6 +78,7 @@ public class PrivateRoom_UIManager : MonoBehaviour
 
     void OnExitButtonClicked()
     {
+        exitButton.gameObject.SetActive(false);
         // 나가기 버튼 클릭 시 게임 매니저에 상태 변경 요청
         PrivateRoom_GameManager.instance.SetState(PrivateRoomState.Exit);
     }

@@ -5,8 +5,8 @@ using UnityEngine;
 public class YutBoardInitializer : MonoBehaviour
 {
     [Header("Prefabs")]
-    public GameObject myPiecePrefab;
-    public GameObject opponentPiecePrefab;
+    [Tooltip("최대 4명의 플레이어를 위한 4가지 색상의 프리팹을 순서대로 넣어주세요.")]
+    public GameObject[] piecePrefabs;
 
     [Header("Piece들 묶는 오브젝트")]
     public Transform pieceContainer;
@@ -18,16 +18,22 @@ public class YutBoardInitializer : MonoBehaviour
     {
         yut_manager = YutManager.Instance;
         main_game_manager = MainGameManager.instance;
-        StartGame();
+        StartGame().Forget(); // 비동기 함수 호출 시 경고를 없애기 위해 Forget() 추가
     }
 
-    private async void StartGame()
+    private async UniTaskVoid StartGame()
     {
-
-        while (main_game_manager.game_stat.boardStatus == null || main_game_manager.game_stat.boardStatus.allPieces == null)
+        // [수정됨] 단계별로 꼼꼼하게 Null 체크를 수행하여 에러로 인한 코드 중단 방지
+        while (main_game_manager == null ||
+               main_game_manager.game_stat == null ||
+               main_game_manager.game_stat.boardStatus == null ||
+               main_game_manager.game_stat.boardStatus.allPieces == null ||
+               main_game_manager.game_stat.roomInfo == null ||
+               main_game_manager.game_stat.roomInfo.playerIds == null)
         {
-            Debug.LogError("보드 불러오기 에러");
-            await UniTask.Delay(1000);
+            Debug.Log("보드 초기화 데이터 대기 중...");
+            // 안전한 대기를 위해 CancellationToken 추가
+            await UniTask.Delay(1000, cancellationToken: this.GetCancellationTokenOnDestroy());
         }
 
         SpawnPieces(main_game_manager.game_stat.boardStatus.allPieces);
@@ -37,14 +43,22 @@ public class YutBoardInitializer : MonoBehaviour
 
     private void SpawnPieces(Dictionary<string, List<PieceInfo>> allPieces)
     {
-        string myPlayerId = PlayerManager.instance.this_player.id;
+        List<string> roomPlayerIds = main_game_manager.game_stat.roomInfo.playerIds;
 
         foreach (var kvp in allPieces)
         {
             string ownerId = kvp.Key;
             List<PieceInfo> pieces = kvp.Value;
 
-            GameObject prefabToUse = (ownerId == myPlayerId) ? myPiecePrefab : opponentPiecePrefab;
+            int playerIndex = roomPlayerIds.IndexOf(ownerId);
+
+            if (playerIndex < 0 || playerIndex >= piecePrefabs.Length)
+            {
+                Debug.LogWarning($"플레이어 {ownerId}의 인덱스를 찾을 수 없거나 프리팹 개수를 초과했습니다. 0번 프리팹을 사용합니다.");
+                playerIndex = 0;
+            }
+
+            GameObject prefabToUse = piecePrefabs[playerIndex];
 
             foreach (var pieceData in pieces)
             {
@@ -55,7 +69,6 @@ public class YutBoardInitializer : MonoBehaviour
                 if (controller != null)
                 {
                     controller.pieceId = pieceData.pieceId;
-
                     yut_manager.RegisterPiece(controller);
                 }
                 else

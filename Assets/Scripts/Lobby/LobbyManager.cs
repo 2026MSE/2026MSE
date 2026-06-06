@@ -20,6 +20,7 @@ public class LobbyManager : MonoBehaviour
     public GameObject roomSelectUI;
     public GameObject inRoomUI;
     public TMP_InputField roomIdInputField;
+    public GameObject start_button;
 
     bool isInLobby = true;
     ServerManager server_manager;
@@ -36,6 +37,7 @@ public class LobbyManager : MonoBehaviour
         server_manager = ServerManager.instance;
         player_manager = PlayerManager.instance;
         main_game_manager = MainGameManager.instance;
+
     }
     public void Update()
     {
@@ -98,6 +100,14 @@ public class LobbyManager : MonoBehaviour
         playerMakingUI.SetActive(false);
         roomSelectUI.SetActive(false);
         inRoomUI.SetActive(true);
+        if (main_game_manager.game_stat.roomInfo.hostId == player_manager.this_player.id)
+        {
+            start_button.SetActive(true);
+        }
+        else
+        {
+            start_button.SetActive(false);
+        }
     }
 
     public void RoomCreate()

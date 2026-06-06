@@ -290,6 +290,7 @@ MonoBehaviour:
   roomSelectUI: {fileID: 363364061}
   inRoomUI: {fileID: 2009156498}
   roomIdInputField: {fileID: 2028659180}
+  start_button: {fileID: 1589335459}
 --- !u!4 &98165872
 Transform:
   m_ObjectHideFlags: 0
