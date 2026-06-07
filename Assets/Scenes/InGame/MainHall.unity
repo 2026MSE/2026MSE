@@ -1024,7 +1024,7 @@ Transform:
   m_GameObject: {fileID: 145415711}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 1, z: 0, w: 0}
-  m_LocalPosition: {x: 0, y: 0, z: 5.5}
+  m_LocalPosition: {x: 0, y: 0, z: 7}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1814,13 +1814,13 @@ MonoBehaviour:
   - {fileID: 799952690}
   - {fileID: 497072075}
   all_result_text: {fileID: 1570774997}
+  challenge_result_text: {fileID: 619270530}
   declareButton2_1: {fileID: 28558286}
   declareButton2_2: {fileID: 907947429}
   challengeOButton: {fileID: 1343224737}
   challengeXButton: {fileID: 1914969251}
-  challengeTimer: {fileID: 1034957837}
-  challenge_result_text: {fileID: 619270530}
   challenge_confirm_button: {fileID: 186456739}
+  challengeTimer: {fileID: 1034957837}
   declareSticks: 0000000000000000
 --- !u!1001 &277097033
 PrefabInstance:
@@ -3095,7 +3095,7 @@ Transform:
   m_GameObject: {fileID: 624269550}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 4, y: 0, z: -4}
+  m_LocalPosition: {x: 4, y: -2, z: -4}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:

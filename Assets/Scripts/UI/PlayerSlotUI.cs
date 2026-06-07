@@ -1,10 +1,12 @@
 using UnityEngine;
 using TMPro;
+using UnityEngine.UI;
 
 public class PlayerSlotUI : MonoBehaviour
 {
     public GameObject emptyVisual;
     public GameObject filledVisual;
+    public Image player_icon;
     private TMP_Text playerNameText;
 
     private void OnEnable()
@@ -18,10 +20,16 @@ public class PlayerSlotUI : MonoBehaviour
         filledVisual.SetActive(false);
     }
 
-    public void SetPlayer(string name)
+    public async void SetPlayer(string name, string url)
     {
         emptyVisual.SetActive(false);
         filledVisual.SetActive(true);
         playerNameText.text = name;
+        Texture2D profile = await ServerManager.instance.TextureRequest(url);
+        player_icon.sprite = Sprite.Create(
+                profile,
+                new Rect(0, 0, profile.width, profile.height),
+                new Vector2(0.5f, 0.5f)
+            );
     }
 }

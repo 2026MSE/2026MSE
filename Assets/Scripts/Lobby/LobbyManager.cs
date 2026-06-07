@@ -28,17 +28,13 @@ public class LobbyManager : MonoBehaviour
     MainGameManager main_game_manager;
     LobbyState lobby_state = LobbyState.NONE;
     
-    private void Start()
-    {
-    }
-
     private void OnEnable()
     {
         server_manager = ServerManager.instance;
         player_manager = PlayerManager.instance;
         main_game_manager = MainGameManager.instance;
-
     }
+
     public void Update()
     {
         switch(lobby_state)

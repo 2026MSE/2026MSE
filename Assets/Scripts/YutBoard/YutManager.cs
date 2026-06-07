@@ -49,7 +49,6 @@ public class YutManager : MonoBehaviour
     private bool is_selecting = false;
     private TurnPhase _lastTurnPhase;
 
-    // [신규 로직] 히스토리 기반 애니메이션 추적용 변수
     private long _lastProcessedSequence = -1;
     private bool _isPlayingMoveAnimation = false;
 
@@ -81,7 +80,6 @@ public class YutManager : MonoBehaviour
     {
         if (main_game_manager == null || main_game_manager.game_stat == null) return;
 
-        // 1. 히스토리 기반 애니메이션 처리
         if (!_isPlayingMoveAnimation && main_game_manager.game_stat.moveHistory != null)
         {
             var history = main_game_manager.game_stat.moveHistory;
@@ -92,7 +90,6 @@ public class YutManager : MonoBehaviour
             }
         }
 
-        // 2. 애니메이션이 끝난 안정적인 상태일 때만 UI 갱신
         if (!_isPlayingMoveAnimation)
         {
             RefreshObserverUI();
@@ -124,7 +121,6 @@ public class YutManager : MonoBehaviour
     }
     private void RefreshObserverUI()
     {
-        // 내 턴이면 이미 FetchAndRefreshMoveUIAsync에서 처리하므로 무시
         if (player_manager.isMyTurn()) return;
 
         var state = main_game_manager.game_stat;
@@ -134,7 +130,6 @@ public class YutManager : MonoBehaviour
         {
             string tmp_string = "남은 이동 : ";
 
-            // 폴링으로 받아온 pendingYutResults(남은 윷 결과들)를 그대로 텍스트로 출력
             if (state.pendingYutResults == null || state.pendingYutResults.Count == 0)
             {
                 tmp_string += "없음";
@@ -166,7 +161,6 @@ public class YutManager : MonoBehaviour
 
         RefreshBoardLayout();
 
-        // [추가] 애니메이션이 완전히 끝난 후, 내 턴이라면 새로운 MoveList를 받아와서 화면을 갱신합니다.
         if (player_manager.isMyTurn() && main_game_manager.game_stat.turnPhase != TurnPhase.CATCH_BONUS_THROW)
         {
             await FetchAndRefreshMoveUIAsync();
@@ -179,7 +173,6 @@ public class YutManager : MonoBehaviour
     {
         List<UniTask> tasks = new List<UniTask>();
 
-        // 1. 움직이는 말(내 말) 이동 연출
         if (move.movedPieceIds != null)
         {
             foreach (var pId in move.movedPieceIds)
@@ -199,11 +192,9 @@ public class YutManager : MonoBehaviour
             }
         }
 
-        // 내 말들이 도착할 때까지 대기
         await UniTask.WhenAll(tasks);
         tasks.Clear();
 
-        // 2. 만약 잡기(Catch) 상황이면, 잡힌 상대 말을 대기석으로 던져버리는 연출
         if (move.moveType == MoveType.CATCH && move.caughtPieceIds != null)
         {
             foreach (var cId in move.caughtPieceIds)
@@ -213,11 +204,9 @@ public class YutManager : MonoBehaviour
                     tasks.Add(piece.transform.DOMove(waitingArea.position, 0.4f).SetEase(Ease.OutBounce).ToUniTask(cancellationToken: token));
                 }
             }
-            // 상대 말이 대기석으로 떨어질 때까지 대기
             await UniTask.WhenAll(tasks);
         }
 
-        // 이동 간 약간의 여유 텀
         await UniTask.Delay(100, cancellationToken: token);
     }
 
@@ -299,13 +288,10 @@ public class YutManager : MonoBehaviour
 
     private async UniTask FetchAndRefreshMoveUIAsync()
     {
-        // 1. 서버에 최신 MoveList 요청
         await server_manager.MoveListRequest();
 
-        // 2. 텍스트 UI 갱신
         RefreshMoveListUI();
 
-        // 3. 클릭 가능한 말 갱신
         CheckMovablePieces(true);
     }
 
@@ -333,12 +319,10 @@ public class YutManager : MonoBehaviour
     }
     private void CheckMovablePieces(bool switch_on = true)
     {
-        // 1. 이전에 띄워둔 이동 가능 발판(Select Move) 확실히 제거
         is_selecting = false;
         select_moves.ForEach(move => Destroy(move));
         select_moves.Clear();
 
-        // 2. 모든 말의 크기를 원상복구하고 클릭 불가 상태로 초기화
         foreach (var kvp in allPiecesDict)
         {
             kvp.Value.transform.localScale = Vector3.one * 1.5f;
@@ -347,7 +331,6 @@ public class YutManager : MonoBehaviour
 
         if (!switch_on) return;
 
-        // 3. 최신 moveListResponse를 기반으로 클릭 가능 여부 셋팅
         var move_list = main_game_manager.moveListResponse;
         if (move_list == null || move_list.moveGroups == null || move_list.moveGroups.Count <= 0) return;
 
@@ -423,7 +406,6 @@ public class YutManager : MonoBehaviour
         select_moves.ForEach(m => Destroy(m));
         select_moves.Clear();
 
-        // 이동 요청만 보내고 대기합니다. (갱신은 Update 루프의 애니메이션 종료 시점에 맞춰서 진행됨)
         await server_manager.MovePieceRequest(pieceId, move.yutResultIndex);
     }
     private async void OnThrowButtonClicked()
@@ -444,13 +426,12 @@ public class YutManager : MonoBehaviour
 
         throwButton.gameObject.SetActive(false);
 
-        // [수정] 윷을 던진 후, 내 턴인 플레이어 화면에만 해당 버튼 표시
         if (player_manager.isMyTurn())
         {
             throw_exit_button.gameObject.SetActive(true);
         }
 
-        throwButton.interactable = true; // 다음 턴을 위해 활성화 복구
+        throwButton.interactable = true;
         CheckMovablePieces();
     }
 

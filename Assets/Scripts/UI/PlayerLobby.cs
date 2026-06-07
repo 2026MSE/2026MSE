@@ -49,7 +49,7 @@ public class PlayerLobby : MonoBehaviour
                 main_game_manager.game_stat.players != null &&
                 i < main_game_manager.game_stat.players.Count)
             {
-                playerSlots[i].SetPlayer(main_game_manager.game_stat.players[i].name);
+                playerSlots[i].SetPlayer(main_game_manager.game_stat.players[i].name, main_game_manager.game_stat.players[i].profileUrl);
             }
             else
             {

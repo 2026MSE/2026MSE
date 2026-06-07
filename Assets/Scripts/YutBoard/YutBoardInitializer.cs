@@ -18,12 +18,11 @@ public class YutBoardInitializer : MonoBehaviour
     {
         yut_manager = YutManager.Instance;
         main_game_manager = MainGameManager.instance;
-        StartGame().Forget(); // 비동기 함수 호출 시 경고를 없애기 위해 Forget() 추가
+        StartGame().Forget();
     }
 
     private async UniTaskVoid StartGame()
     {
-        // [수정됨] 단계별로 꼼꼼하게 Null 체크를 수행하여 에러로 인한 코드 중단 방지
         while (main_game_manager == null ||
                main_game_manager.game_stat == null ||
                main_game_manager.game_stat.boardStatus == null ||
@@ -32,7 +31,6 @@ public class YutBoardInitializer : MonoBehaviour
                main_game_manager.game_stat.roomInfo.playerIds == null)
         {
             Debug.Log("보드 초기화 데이터 대기 중...");
-            // 안전한 대기를 위해 CancellationToken 추가
             await UniTask.Delay(1000, cancellationToken: this.GetCancellationTokenOnDestroy());
         }
 

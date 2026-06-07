@@ -3251,7 +3251,8 @@ MonoBehaviour:
   maxRows: 4
   piggybackHeight: 1
   plateYOffset: 0
-  spreadRadius: 0.3
+  spreadRadius: 1
+  isVerticalAlignment: 1
 --- !u!1 &1252355825
 GameObject:
   m_ObjectHideFlags: 0

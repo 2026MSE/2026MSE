@@ -88,7 +88,13 @@ public class ServerManager : MonoBehaviour
 
             ApiResponse<GameStateResponse> game_state_response = JsonConvert.DeserializeObject<ApiResponse<GameStateResponse>>(game_state);
 
-            //Debug.Log(game_state_response.data.roomInfo.playerIds);
+            //if(game_state_response.data.turnPhase != TurnPhase.WAITING)
+            //{
+            //    foreach (var player in game_state_response.data.players)
+            //    {
+            //        Debug.Log($"{player.playerId} {player.name} {player.profileUrl}");
+            //    }
+            //}
 
             main_game_manager.game_stat = game_state_response.data;
 
@@ -180,14 +186,15 @@ public class ServerManager : MonoBehaviour
         }
     }
 
-    // ¾È¾¸
-    public async UniTaskVoid TextureRequest()
+    public async UniTask<Texture2D> TextureRequest(string url)
     {
-        Texture2D result = await FetchTextureFromServer("https://api.dicebear.com/9.x/bottts/png");
+        Debug.Log(url);
+        Texture2D result = await FetchTextureFromServer(url);
         if (result != null)
         {
-            //test_plane.GetComponent<Renderer>().material.mainTexture = result;
+            return result;
         }
+        return null;
     }
 
     public async UniTaskVoid YutRequest()
