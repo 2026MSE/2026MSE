@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using Cysharp.Threading.Tasks;
@@ -217,45 +217,75 @@ public class MainHallManager : MonoBehaviour
         ServerManager.instance.DeclareRequest(declareSticks).Forget();
     }
 
-    public void SetDeclareStick01Head() { declareSticks[0] = StickSide.HEAD; UpdateUI(); SetYutResultText(); }
-    public void SetDeclareStick01Back() { declareSticks[0] = StickSide.BACK; UpdateUI(); SetYutResultText(); }
-    public void SetDeclareStick02Head() { declareSticks[1] = StickSide.HEAD; UpdateUI(); SetYutResultText(); }
-    public void SetDeclareStick02Tail() { declareSticks[1] = StickSide.TAIL; UpdateUI(); SetYutResultText(); }
+    public void SetDeclareStick01Head() { declareSticks[0] = StickSide.HEAD; SetYutResultText(); }
+    public void SetDeclareStick01Back() { declareSticks[0] = StickSide.BACK; SetYutResultText(); }
+    public void SetDeclareStick02Head() { declareSticks[1] = StickSide.HEAD; SetYutResultText(); }
+    public void SetDeclareStick02Tail() { declareSticks[1] = StickSide.TAIL; SetYutResultText(); }
 
-    private void SetYutResultText()
+    void SetYutResultText()
     {
         StickSide[] sticks = new StickSide[4];
-        var stat = main_game_manager.game_stat;
-        bool isDeclarePhase = stat.turnPhase == TurnPhase.MAIN_HALL_DECLARE;
 
-        if (stat.privateSticks.Length <= 1)
+        if (declareSticks.Length <= 1)
         {
-            sticks[0] = isDeclarePhase ? declareSticks[0] : stat.declaredPrivateSticks[0];
-            sticks[1] = stat.publicSticks[0];
-            sticks[2] = stat.publicSticks[1];
-            sticks[3] = stat.publicSticks[2];
+            if (main_game_manager.game_stat.turnPhase == TurnPhase.MAIN_HALL_DECLARE)
+                sticks[0] = declareSticks[0];
+            else
+                sticks[0] = main_game_manager.game_stat.declaredPrivateSticks[0];
+
+            sticks[1] = main_game_manager.game_stat.publicSticks[0];
+            sticks[2] = main_game_manager.game_stat.publicSticks[1];
+            sticks[3] = main_game_manager.game_stat.publicSticks[2];
         }
         else
         {
-            sticks[0] = isDeclarePhase ? declareSticks[0] : stat.declaredPrivateSticks[0];
-            sticks[1] = isDeclarePhase ? declareSticks[1] : stat.declaredPrivateSticks[1];
-            sticks[2] = stat.publicSticks[0];
-            sticks[3] = stat.publicSticks[1];
+            if (main_game_manager.game_stat.turnPhase == TurnPhase.MAIN_HALL_DECLARE)
+            {
+                sticks[0] = declareSticks[0];
+                sticks[1] = declareSticks[1];
+            }
+            else
+            {
+                sticks[0] = main_game_manager.game_stat.declaredPrivateSticks[0];
+                sticks[1] = main_game_manager.game_stat.declaredPrivateSticks[1];
+            }
+
+            sticks[2] = main_game_manager.game_stat.publicSticks[0];
+            sticks[3] = main_game_manager.game_stat.publicSticks[1];
         }
 
-        int tailCount = 0;
+        int tail_count = 0;
+
         foreach (var stick in sticks)
         {
-            if (stick == StickSide.TAIL || stick == StickSide.BACK) tailCount++;
+            if (stick == StickSide.TAIL || stick == StickSide.BACK)
+            {
+                tail_count++;
+            }
         }
 
-        switch (tailCount)
+        switch (tail_count)
         {
-            case 0: all_result_text.text = YutName.MO.ToString(); break;
-            case 1: all_result_text.text = (declareSticks[0] == StickSide.BACK) ? YutName.BACK_DO.ToString() : YutName.DO.ToString(); break;
-            case 2: all_result_text.text = YutName.GAE.ToString(); break;
-            case 3: all_result_text.text = YutName.GEOL.ToString(); break;
-            case 4: all_result_text.text = YutName.YUT.ToString(); break;
+            case 0:
+                all_result_text.text = YutName.MO.ToString();
+                break;
+            case 1:
+                all_result_text.text = YutName.DO.ToString();
+                break;
+            case 2:
+                all_result_text.text = YutName.GAE.ToString();
+                break;
+            case 3:
+                all_result_text.text = YutName.GEOL.ToString();
+                break;
+            case 4:
+                all_result_text.text = YutName.YUT.ToString();
+                break;
+        }
+
+        if (tail_count == 1 && declareSticks[0] == StickSide.BACK)
+        {
+            all_result_text.text = YutName.BACK_DO.ToString();
         }
     }
 }
