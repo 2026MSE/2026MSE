@@ -246,8 +246,16 @@ public class MainHallManager : MonoBehaviour
             }
             else
             {
-                sticks[0] = main_game_manager.game_stat.declaredPrivateSticks[0];
-                sticks[1] = main_game_manager.game_stat.declaredPrivateSticks[1];
+                if(main_game_manager.game_stat.declaredPrivateSticks.Length <= 1)
+                {
+                    sticks[0] = main_game_manager.game_stat.declaredPrivateSticks[0];
+                    sticks[1] = main_game_manager.game_stat.publicSticks[1];
+                }
+                else
+                {
+                    sticks[0] = main_game_manager.game_stat.declaredPrivateSticks[0];
+                    sticks[1] = main_game_manager.game_stat.declaredPrivateSticks[1];
+                }
             }
 
             sticks[2] = main_game_manager.game_stat.publicSticks[0];
