@@ -217,10 +217,10 @@ public class MainHallManager : MonoBehaviour
         ServerManager.instance.DeclareRequest(declareSticks).Forget();
     }
 
-    public void SetDeclareStick01Head() { declareSticks[0] = StickSide.HEAD; SetYutResultText(); }
-    public void SetDeclareStick01Back() { declareSticks[0] = StickSide.BACK; SetYutResultText(); }
-    public void SetDeclareStick02Head() { declareSticks[1] = StickSide.HEAD; SetYutResultText(); }
-    public void SetDeclareStick02Tail() { declareSticks[1] = StickSide.TAIL; SetYutResultText(); }
+    public void SetDeclareStick01Head() { declareSticks[0] = StickSide.HEAD; UpdateUI(); SetYutResultText(); }
+    public void SetDeclareStick01Back() { declareSticks[0] = StickSide.BACK; UpdateUI(); SetYutResultText(); }
+    public void SetDeclareStick02Head() { declareSticks[1] = StickSide.HEAD; UpdateUI(); SetYutResultText(); }
+    public void SetDeclareStick02Tail() { declareSticks[1] = StickSide.TAIL; UpdateUI(); SetYutResultText(); }
 
     void SetYutResultText()
     {
