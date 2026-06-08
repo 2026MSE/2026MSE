@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -21,6 +21,7 @@ public class LobbyManager : MonoBehaviour
     public GameObject inRoomUI;
     public TMP_InputField roomIdInputField;
     public GameObject start_button;
+    public TextMeshProUGUI room_num_text;
 
     bool isInLobby = true;
     ServerManager server_manager;
@@ -104,6 +105,9 @@ public class LobbyManager : MonoBehaviour
         {
             start_button.SetActive(false);
         }
+        room_num_text.text = "Room : " + main_game_manager.game_stat.roomInfo.roomId;
+
+
     }
 
     public void RoomCreate()
