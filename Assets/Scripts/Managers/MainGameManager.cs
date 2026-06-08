@@ -1,4 +1,4 @@
-using System.Collections;
+ï»¿using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEditor;
@@ -36,7 +36,7 @@ public class MainGameManager : MonoBehaviour
     {
         playerManager = PlayerManager.instance;
         //SceneManager.LoadScene("MainGameUI", LoadSceneMode.Additive);
-        //µğ¹ö±ë¿ë
+        //ë””ë²„ê¹…ìš©
         //ServerManager.instance.TextureRequest().Forget();
     }
 
@@ -72,7 +72,7 @@ public class MainGameManager : MonoBehaviour
         }
 
         
-        // ¿¹¿ÜÃ³¸®
+        // ì˜ˆì™¸ì²˜ë¦¬
         if (currentClientScene != ClientScene.IN_GAME
             || game_stat.turnPhase == now_pos_phase)
             return;
@@ -136,6 +136,7 @@ public class MainGameManager : MonoBehaviour
     void RoomCreate()
     {
         gotoSceneName = "RoomCreate";
+        StartCoroutine(MoveCameraCoroutine(0.5f));
         LoadingScene(true);
     }
     public void MainHall()
@@ -148,14 +149,14 @@ public class MainGameManager : MonoBehaviour
         if(!SceneManager.GetSceneByName("MainHall").IsValid())
         {
             now_pos_phase = TurnPhase.WAITING;
-            Debug.Log("MainHall ¾ÀÀÌ ·ÎµåµÇÁö ¾Ê¾Ò½À´Ï´Ù. MainHall ¾ÀÀ¸·Î ÀÌµ¿ÇÕ´Ï´Ù.");
+            Debug.Log("MainHall ì”¬ì´ ë¡œë“œë˜ì§€ ì•Šì•˜ìŠµë‹ˆë‹¤. MainHall ì”¬ìœ¼ë¡œ ì´ë™í•©ë‹ˆë‹¤.");
             gotoSceneName = "MainHall";
             LoadingScene();
             return;
         }
         if (!playerManager.isMyTurn())
         {
-            Debug.Log("ÇöÀç ÇÃ·¹ÀÌ¾îÀÇ ÅÏÀÌ ¾Æ´Õ´Ï´Ù.");
+            Debug.Log("í˜„ì¬ í”Œë ˆì´ì–´ì˜ í„´ì´ ì•„ë‹™ë‹ˆë‹¤.");
             return;
         }
         Debug.Log("MainGameManager: PrivateRoom");
@@ -176,9 +177,33 @@ public class MainGameManager : MonoBehaviour
     void Exit()
     {
 #if UNITY_EDITOR
-        UnityEditor.EditorApplication.isPlaying = false; // ¿¡µğÅÍ ¸ğµå Á¾·á
+        UnityEditor.EditorApplication.isPlaying = false; // ì—ë””í„° ëª¨ë“œ ì¢…ë£Œ
 #else
-    Application.Quit(); // ºôµåµÈ ¾Û Á¾·á
+    Application.Quit(); // ë¹Œë“œëœ ì•± ì¢…ë£Œ
 #endif
+    }
+
+    public IEnumerator MoveCameraCoroutine(float duration)
+    {
+        Camera cam = Camera.main;
+        Vector3 startPosition = cam.transform.position;
+        float elapsedTime = 0f;
+        Vector3 targetPosition = cam.transform.position + new Vector3(0, 0, 2f);
+
+
+        while (elapsedTime < duration)
+        {
+            elapsedTime += Time.deltaTime;
+
+            float normalizedTime = elapsedTime / duration;
+
+            float smoothTime = Mathf.SmoothStep(0f, 1f, normalizedTime);
+
+            cam.transform.position = Vector3.Lerp(startPosition, targetPosition, smoothTime);
+
+            yield return null;
+        }
+
+        cam.transform.position = targetPosition;
     }
 }
